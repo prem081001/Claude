@@ -1,13 +1,80 @@
-# SEO Skills for UK Bathroom Retail
+# Claude Agent Skills
 
-Agent Skills (SKILL.md format) checked and packaged for SEO work on BestQualityBathrooms,
-BathroomShopUK and Pryor Bathrooms Sheffield.
+Agent Skills (SKILL.md format) packaged for upload to Claude.
 
 Each skill sits in its own folder under `skills/`. Each one also has a ZIP in `zips/` with the
 skill folder at the top level, which is the format claude.ai accepts
 (Settings → Capabilities → Skills → Upload skill).
 
-## Skills
+There are two sets here:
+
+- **[SEO skills](#seo-skills-uk-bathroom-retail)** — the original three, vetted for SEO work on
+  BestQualityBathrooms, BathroomShopUK and Pryor Bathrooms Sheffield.
+- **[The ten general skills](#the-ten-general-skills)** — added from the video
+  *"I Tested 1000+ Claude Skills: These 10 Are The Only Ones That Matter"* (Vaibhav Sisinty).
+
+---
+
+## The ten general skills
+
+Added 12 October 2026. **Read the provenance column before trusting any of these** — they were
+not all obtained the same way, and only three are upstream code.
+
+| # in video | Skill | What it does | Provenance |
+|---|---|---|---|
+| 1 | `frontend-design` | Pushes UI work past templated defaults — deliberate palette, typography and layout choices grounded in the subject matter. | **Upstream, verbatim.** [anthropics/skills](https://github.com/anthropics/skills/tree/main/skills/frontend-design), Apache 2.0 |
+| 2 | `deep-research` | Decomposes a research question, dispatches parallel searches, reconciles conflicting sources, returns a cited synthesis. | **Written for this repo.** No upstream identified |
+| 3 | `humanizer` | Strips AI writing tells — not-X-but-Y, one-line closers, forced triads, dash overuse, stock AI vocabulary. 26 named patterns. | **Upstream, verbatim.** [blader/humanizer](https://github.com/blader/humanizer) v3.1.0, MIT |
+| 4 | `skill-creator` | Builds, edits and evaluates skills. Includes the packaging script and the eval viewer. | **Upstream, verbatim.** [anthropics/skills](https://github.com/anthropics/skills/tree/main/skills/skill-creator), Apache 2.0 |
+| 5 | `office-hours` | YC-partner-style interrogation of an idea before it gets built — six forcing questions, blind spots, alternatives, a design doc. | **Written for this repo**, adapting the behaviour of [garrytan/gstack](https://github.com/garrytan/gstack) `/office-hours` (MIT). See the note below |
+| 6 | `seo-competitor-audit` | Benchmarks a site against named competitors across on-page, technical, mobile and AI search readiness; returns an impact-ranked fix list. | **Written for this repo.** No upstream identified |
+| 7 | `fact-checker` | Decomposes text into atomic claims, traces each to a primary source, returns per-claim verdict + confidence + link. | **Written for this repo.** No upstream identified |
+| 8 | `brand-guidelines` | Holds a brand's colours, typography, voice, naming rules and never-say list, and applies them to every output. | **Written for this repo.** See the note below |
+| 9 | `find-skill` | Routes a plain-English request to the right installed skill, so a large library stays usable. | **Written for this repo.** No upstream identified |
+| 10 | `token-optimization` | Survey-then-extract routine for large document sets, so a 38-PDF corpus does not become a 38-PDF read. | **Written for this repo.** No upstream identified |
+
+### What "written for this repo" means
+
+The video summary describes each skill's **function and mechanism** but names a source for only
+two of them (`frontend-design` as an official Anthropic skill, `office-hours` as part of gstack).
+For the seven others, no single authoritative upstream could be identified — searching turns up
+many same-named community skills with different implementations, and there is no way to tell
+which one the video used.
+
+So those were **written from the described behaviour**, not copied. They are original
+implementations that do the described job. They are not the files the video demonstrated, and
+should not be described as such.
+
+### Two skills that needed a judgement call
+
+**`office-hours`** — the real gstack version is a 95 KB SKILL.md wired into the rest of the
+framework: it reads and writes shared `gbrain` state, resolves paths through `gstack-paths` and
+`gstack-config`, and feeds companion skills (`/plan-ceo-review`, `/plan-eng-review`, `/autoplan`).
+Copied out on its own it would reference helpers and state directories that do not exist. The
+version here is standalone and reproduces the conversation — the six forcing questions, the blind
+spots, the alternatives, the design document. For the full chain, install gstack itself.
+
+**`brand-guidelines`** — Anthropic publishes a skill by this name, but it applies *Anthropic's own*
+brand (their hex codes, Poppins and Lora). That is a worked example, not the skill the video
+describes, which is a reusable baseline for *your* brand. Shipping Anthropic's colours into a
+bathroom retailer's skill pack would be actively wrong, so the version here is generic: a template
+with a filled-in placeholder profile and a setup procedure. Replace the `Example Co.` block with
+your own before using it.
+
+### Checks run on these ten
+
+- **Safety:** every file was read. The three upstream skills contain no network calls and no
+  remote code execution. `skill-creator`'s scripts use `subprocess` to invoke `claude -p` for
+  evals and `base64` to embed images in its local HTML viewer — both consistent with their
+  documented purpose. The seven authored skills are plain Markdown with no scripts.
+- **Format:** all thirteen skills validated — YAML frontmatter parses, `name` matches the folder
+  name, `description` present.
+- **Not run:** none of these ten were A/B tested the way the three SEO skills were. The authored
+  seven have had no eval pass at all. Treat the whole set as unproven until you have used them.
+
+---
+
+## SEO skills (UK bathroom retail)
 
 | Skill | What it does | Source | Checked |
 |---|---|---|---|
@@ -18,7 +85,11 @@ skill folder at the top level, which is the format claude.ai accepts
 All three come from Corey Haines' `marketingskills` repository, copied unchanged from commit
 `c0e35b7` (1 October 2026). The repository's MIT licence is included in each skill folder.
 
-## How they were checked
+`seo-competitor-audit` (from the ten above) overlaps with `seo-audit` and does not replace it:
+`seo-audit` diagnoses one site in depth, `seo-competitor-audit` compares several and ranks the
+gaps. Use the first to find what is broken, the second to find what is costing you the ranking.
+
+### How the SEO three were checked
 
 - **Proof:** the repository has about 52K GitHub stars, an MIT licence, and active maintenance
   (last commit 1 October 2026, more than 300 commits since April 2026). Third-party directories
@@ -34,7 +105,7 @@ All three come from Corey Haines' `marketingskills` repository, copied unchanged
   without it. seo-audit was clearly better and site-architecture was better.
   content-strategy was only marginally better and was kept at the owner's request.
 
-## Known limitations
+### Known limitations
 
 - The examples are mostly written for software (SaaS) companies. The frameworks still apply to
   e-commerce, but expect to steer the output towards bathroom products.
@@ -47,3 +118,25 @@ All three come from Corey Haines' `marketingskills` repository, copied unchanged
   scoring table works best with real customer data (sales or support questions).
 - The `evals/evals.json` files are the author's test cases. Claude doesn't need them to use
   the skill, and they're kept only to show how each skill is meant to behave.
+
+---
+
+## Installing
+
+**claude.ai** — Settings → Capabilities → Skills → Upload skill, then pick the ZIP from `zips/`.
+
+**Claude Code** — copy the folder into `~/.claude/skills/` (all projects) or `.claude/skills/`
+(this project only):
+
+```bash
+cp -r skills/humanizer ~/.claude/skills/
+```
+
+## Licences
+
+| Skill | Licence |
+|---|---|
+| `frontend-design`, `skill-creator` | Apache 2.0 — Anthropic (`LICENSE` in each folder) |
+| `humanizer` | MIT — blader (`LICENSE` in the folder) |
+| `seo-audit`, `site-architecture`, `content-strategy` | MIT — Corey Haines (`LICENSE` in each folder) |
+| The seven authored skills | No upstream licence — written for this repo |

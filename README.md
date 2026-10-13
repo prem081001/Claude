@@ -77,16 +77,69 @@ bathroom retailer's skill pack would be actively wrong, so the version here is g
 with a filled-in placeholder profile and a setup procedure. Replace the `Example Co.` block with
 your own before using it.
 
-### Checks run on these ten
+### Verification status of these ten
 
-- **Safety:** every file was read. The three upstream skills contain no network calls and no
-  remote code execution. `skill-creator`'s scripts use `subprocess` to invoke `claude -p` for
-  evals and `base64` to embed images in its local HTML viewer — both consistent with their
-  documented purpose. The seven authored skills are plain Markdown with no scripts.
-- **Format:** all thirteen skills validated — YAML frontmatter parses, `name` matches the folder
-  name, `description` present.
-- **Not run:** none of these ten were A/B tested the way the three SEO skills were. The authored
-  seven have had no eval pass at all. Treat the whole set as unproven until you have used them.
+Be precise about what has and has not been checked. An earlier version of this file
+said "every file was read", which was not true — the files had been pattern-matched,
+not read. Corrected below.
+
+**Verified, by running something:**
+
+- **Format** — all thirteen skills pass `skill-creator`'s own `quick_validate.py`
+  (Anthropic's validator, not an ad-hoc one). That checks frontmatter parses as YAML,
+  no unexpected top-level keys, `name` is kebab-case and ≤64 chars, `description` is a
+  string ≤1024 chars with no angle brackets. **It says nothing about whether a skill
+  works.**
+- **Scripts compile and import** — all seven Python files in `skill-creator` compile,
+  and every `from scripts.x import y` resolves.
+- **Packaging works end to end** — `package_skill.py` was run against a real skill and
+  produced a valid `.skill` archive.
+- **Executable code audited by reading it**, not grepping. Findings below.
+
+**Not verified — nobody has run these skills on a real task:**
+
+- No skill in this set has been invoked and its output judged. The three upstream ones
+  are widely used elsewhere; the seven authored ones have never been run at all.
+- Trigger accuracy is untested — whether each `description` actually fires on the
+  phrasing a user would type is exactly what `skill-creator`'s eval loop measures, and
+  that loop has not been run.
+- None of the ten was A/B tested the way the three SEO skills were.
+
+Treat the whole set as unproven until you have used it.
+
+### What the code audit found
+
+The only executable code here is `skill-creator`'s seven Python files. Read in full:
+
+- **No outbound network calls of any kind** — no `urllib`, `requests`, `socket`, no
+  `urlopen`. Nothing phones home.
+- **`subprocess` runs exactly two commands**: `claude -p` (the local CLI, for running
+  evals) and `lsof` (to check a port). Both passed as argument lists, never
+  `shell=True`, so there is no command-injection surface.
+- **The review server binds to `127.0.0.1` only**, never `0.0.0.0`. It is not reachable
+  from the network.
+- **`base64` is used only** to inline images into the local HTML viewer as data URIs.
+
+Two side effects worth knowing about before you run the eval tooling — neither is
+malicious, both can surprise you:
+
+1. `eval-viewer/generate_review.py` calls `_kill_port()` before starting, which sends
+   `SIGTERM` to **any process listening on its port**. If your dev server is on that
+   port, it gets killed. Pass `--port` to avoid it.
+2. `scripts/run_eval.py` writes a temporary command file into your project's
+   `.claude/commands/` and deletes it afterwards. If it crashes mid-run, that file is
+   left behind.
+
+### A defect found and fixed
+
+The first version of this repo shipped `skill-creator` **broken**. Its `SKILL.md`
+referenced four Python modules — `quick_validate.py`, `utils.py`, `generate_report.py`,
+`improve_description.py` — that were never downloaded, because the first pass guessed
+at filenames rather than resolving the import graph. Three of the four scripts would
+have died on `ImportError` at first use.
+
+Caught by actually reading `package_skill.py` rather than grepping it. All four modules
+are now present and the dependency graph closes.
 
 ---
 

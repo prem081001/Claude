@@ -2,7 +2,7 @@
 name: fact-checker
 description: Verify the factual claims in a piece of text — an article, a viral social post, a press release, a draft — against primary sources, and return a per-claim verdict with confidence and links. Use when the user says "fact check," "is this true," "verify this," "check these claims," "did they really say," "is this real," "debunk," or pastes a post and asks whether to believe it. Also use before publishing anything that states figures, dates, attributions or research findings.
 metadata:
-  version: 1.0.0
+  version: 1.1.0
 ---
 
 # Fact Checker
@@ -122,6 +122,42 @@ Rules for the report:
   say the question is contested rather than picking.
 - Note who funded or published a source when they have a stake in the answer.
 - Say what you could not check and why. Paywalled, deleted, no source exists.
+
+## Mode B — fixing a document, not judging a post
+
+Everything above assumes the user wants a verdict on someone else's text. When the text
+is **theirs** and the goal is to correct it before publishing, the checking is the same
+and the ending is different.
+
+*(This workflow follows the correction pattern in
+[daymade/claude-code-skills](https://github.com/daymade/claude-code-skills) `fact-checker`.)*
+
+Run steps 1–3 as written, then:
+
+**Report before editing.** Show every proposed correction with its location, the
+current wording, the replacement, and the source:
+
+```
+docs/pricing.md:42
+  Current:     "the largest supplier in the UK"
+  Correction:  "one of the largest suppliers in the UK"
+  Source:      <trade body market share table, 2025> — https://...
+  Why:         Three competitors report higher turnover; the original claim is
+               unsupported and is the kind of superlative that attracts complaints.
+```
+
+**Wait for approval.** Ask explicitly — "shall I apply these?" — and do not edit until
+the user says yes. Apply them individually, not as a bulk rewrite, so each change stays
+traceable to its source.
+
+**Date what you cannot make permanent.** A figure that is right today will be wrong
+later. Prefer "as of January 2026, 1.2M users" over "1.2M users", and "Claude Opus 4.5
+(released November 2025)" over "the latest model". Claims phrased as "currently",
+"the newest" or "the latest" should be rewritten with the date even when the number
+itself checks out — that is a finding, not a style note.
+
+**Match the source's precision.** If the source says "approximately 1 million", do not
+write "1,000,000". Borrowed precision is its own kind of false claim.
 
 ## Guardrails
 

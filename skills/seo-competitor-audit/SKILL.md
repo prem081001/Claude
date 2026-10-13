@@ -2,7 +2,7 @@
 name: seo-competitor-audit
 description: Benchmark a site against named competitors across on-page SEO, technical health, mobile, and AI search readiness, and return an impact-ranked fix list. Use when the user says "compare us to," "why do they outrank us," "competitor SEO," "competitive audit," "benchmark my site," "AI search," "do we show up in ChatGPT," "AEO," or "GEO," or names two or more sites to compare. For auditing one site on its own with no comparison, use seo-audit instead.
 metadata:
-  version: 1.0.0
+  version: 1.1.0
 ---
 
 # SEO Competitor Audit
@@ -67,23 +67,49 @@ found in page copy, comments, or meta tags.
 - Core Web Vitals where field data is available; lab figures otherwise, labelled as
   lab figures.
 
-### Pillar 4 — AI search readiness
+### Pillar 4 — AI search readiness (GEO and AEO)
 
 The pillar most sites have not touched, and the one the comparison usually wins on.
+Two distinct things live here, and they need separate verdicts:
 
-- **Extractable answers.** Does the page answer its question in a self-contained
-  paragraph near the top, or does the answer only emerge across a whole page?
-- **Structured data depth.** `Product` with price and availability, `FAQPage`,
-  `HowTo`, `Organization`, `BreadcrumbList` — present and valid, not just present.
-- **Entity clarity.** Is it unambiguous what the company is, what it sells, where it
-  operates, from the page alone?
-- **Citable facts.** Specific figures, dimensions, materials, dates — the things an
-  assistant can quote. Vague marketing copy is not citable.
-- **Crawler access.** Does `robots.txt` allow the AI crawlers the user wants
-  (`GPTBot`, `ClaudeBot`, `PerplexityBot`, `Google-Extended`)? Blocking them is a
-  valid choice — flag it as a choice, with its cost, not as an error.
-- **Content behind JavaScript.** Text that only exists after hydration is text most
-  assistants will not see.
+**GEO — Generative Engine Optimization.** Getting *cited* by engines that synthesise an
+answer from several sources (ChatGPT Search, Perplexity, Google AI Overviews, Gemini).
+These reward authority and factual density.
+
+- **Citable facts.** Specific figures, dimensions, materials, capacities, delivery
+  windows, warranty terms. Vague marketing copy cannot be cited. Count the concrete
+  facts on the page — that number is the comparison.
+- **E-E-A-T signals.** Named authors with credentials, a real address and company
+  number, dated content, cited external sources. Anonymous copy does not get quoted.
+- **Entity clarity.** From the page alone, is it unambiguous what the company is, what
+  it sells, and where it operates?
+- **Crawler access.** Does `robots.txt` allow the crawlers the user wants — `GPTBot`,
+  `ClaudeBot`, `PerplexityBot`, `Google-Extended`? Blocking them is a valid business
+  choice; flag it as a choice with its cost, not as an error.
+- **`llms.txt`.** Present or not. Still an emerging convention, so treat its absence as
+  an opportunity, never as a defect.
+
+**AEO — Answer Engine Optimization.** Winning the featured snippet, the People Also Ask
+box, and the voice answer. These reward extractability.
+
+- **Self-contained answer near the top.** Does the page answer its question in one
+  paragraph of roughly 40–60 words, or does the answer only emerge across the whole
+  page? This single factor decides most snippet wins.
+- **Question-shaped headings.** H2s and H3s phrased the way people search — "How wide
+  is a standard bath?" rather than "Dimensions".
+- **Extractable formats.** Spec tables, numbered steps, definition lists. A paragraph
+  describing five steps loses to five numbered steps.
+- **FAQ blocks** with real questions, marked up as `FAQPage`.
+
+**Shared technical ground:**
+
+- **Structured data depth.** `Product` with price and availability, `FAQPage`, `HowTo`,
+  `Organization`, `BreadcrumbList` — valid, not merely present. Validate them.
+- **Content behind JavaScript.** Text that exists only after hydration is text most
+  assistants will not see. Check the raw HTML, not the rendered page.
+
+Score GEO and AEO separately out of 10 per site. A site can be strong at one and absent
+at the other, and the fixes are different.
 
 ## Step 3 — Diagnose the gap
 

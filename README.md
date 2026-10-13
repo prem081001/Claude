@@ -27,11 +27,27 @@ not all obtained the same way, and only three are upstream code.
 | 3 | `humanizer` | Strips AI writing tells — not-X-but-Y, one-line closers, forced triads, dash overuse, stock AI vocabulary. 26 named patterns. | **Upstream, verbatim.** [blader/humanizer](https://github.com/blader/humanizer) v3.1.0, MIT |
 | 4 | `skill-creator` | Builds, edits and evaluates skills. Includes the packaging script and the eval viewer. | **Upstream, verbatim.** [anthropics/skills](https://github.com/anthropics/skills/tree/main/skills/skill-creator), Apache 2.0 |
 | 5 | `office-hours` | YC-partner-style interrogation of an idea before it gets built — six forcing questions, blind spots, alternatives, a design doc. | **Written for this repo**, adapting the behaviour of [garrytan/gstack](https://github.com/garrytan/gstack) `/office-hours` (MIT). See the note below |
-| 6 | `seo-competitor-audit` | Benchmarks a site against named competitors across on-page, technical, mobile and AI search readiness; returns an impact-ranked fix list. | **Written for this repo.** No upstream identified |
-| 7 | `fact-checker` | Decomposes text into atomic claims, traces each to a primary source, returns per-claim verdict + confidence + link. | **Written for this repo.** No upstream identified |
+| 6 | `seo-competitor-audit` | Benchmarks a site against named competitors across on-page, technical, mobile and AI search readiness (GEO + AEO scored separately); returns an impact-ranked fix list. | **Written for this repo**, GEO/AEO pillar informed by [SNLabat/SEO-GEO-AEO-Skill](https://github.com/SNLabat/SEO-GEO-AEO-Skill) |
+| 7 | `fact-checker` | Decomposes text into atomic claims, traces each to a primary source, returns per-claim verdict + confidence + link. Mode B applies corrections to the user’s own document after approval. | **Written for this repo**, correction mode informed by [daymade/claude-code-skills](https://github.com/daymade/claude-code-skills) |
 | 8 | `brand-guidelines` | Holds a brand's colours, typography, voice, naming rules and never-say list, and applies them to every output. | **Written for this repo.** See the note below |
-| 9 | `find-skill` | Routes a plain-English request to the right installed skill, so a large library stays usable. | **Written for this repo.** No upstream identified |
-| 10 | `token-optimization` | Survey-then-extract routine for large document sets, so a 38-PDF corpus does not become a 38-PDF read. | **Written for this repo.** No upstream identified |
+| 9 | `find-skills` | Routes a plain-English request to an installed skill first, then searches the wider ecosystem (`npx skills`, skills.sh) with quality and safety checks if nothing installed fits. | **Written for this repo**, stage 2 follows [vercel-labs/skills](https://github.com/vercel-labs/skills) `find-skills` (MIT) |
+| 10 | `token-optimization` | Survey-then-extract routine for large document sets, plus session-level waste (MCP audit, cache invalidation, context forking). | **Written for this repo**, session section informed by [valorisa/Claude-Skills](https://github.com/valorisa/Claude-Skills) (MIT) |
+
+### A second pass on the four you flagged
+
+`fact-checker`, `find-skills`, `token-optimization` and `seo-competitor-audit` were
+searched again specifically. Real, inspectable skills exist for all four — none is
+identical to the one the video demonstrated, and each scopes the job differently:
+
+| Skill | What the real ones do | What the video describes | Outcome |
+|---|---|---|---|
+| `find-skills` | [vercel-labs](https://github.com/vercel-labs/skills) discovers and installs *new* skills from skills.sh | routing across *installed* skills | **Merged.** Stage 1 routes locally, stage 2 searches the ecosystem |
+| `fact-checker` | [daymade](https://github.com/daymade/claude-code-skills) corrects claims in your own documents | judging articles and viral posts | **Kept ours**, added their correction workflow as Mode B |
+| `token-optimization` | [valorisa](https://github.com/valorisa/Claude-Skills) manages session cost (MCP, cache, context window) | processing large document corpora | **Kept ours**, added their session-level analysis up front |
+| `seo-competitor-audit` | [SNLabat](https://github.com/SNLabat/SEO-GEO-AEO-Skill) scores one site on SEO/GEO/AEO | benchmarking several competitors | **Kept ours**, borrowed their GEO/AEO split for pillar 4 |
+
+Nothing was copied verbatim in this pass — the structure and technique were taken and
+rewritten, and each source is credited in the table above and in the skill itself.
 
 ### What "written for this repo" means
 

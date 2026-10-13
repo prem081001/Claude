@@ -2,7 +2,7 @@
 name: token-optimization
 description: Read and analyse large document sets — dozens of PDFs, research papers, board decks, long transcripts, big CSVs — without burning the context window or hitting usage limits. Use when the user says "analyse these PDFs," "summarise this folder," "read these papers," "go through this deck," "too long," "context limit," "running out of tokens," "rate limited," "usage limit," or hands over more material than fits in one read. Also use before any task that would otherwise mean reading many whole files end to end.
 metadata:
-  version: 1.0.0
+  version: 1.1.0
 ---
 
 # Token Optimization
@@ -13,6 +13,43 @@ skill is the routine for keeping that ratio low while keeping the answer honest.
 
 The rule that drives everything below: **never read a whole file to find out whether
 you need it.**
+
+## Before any of that — check the session itself
+
+The routine above is about large *inputs*. The other half of token waste is the session
+you are already in, and it is usually cheaper to fix. Check this first when the user
+reports hitting limits rather than analysing a specific corpus.
+
+*(This section follows the session-level analysis in
+[valorisa/Claude-Skills](https://github.com/valorisa/Claude-Skills) `token-optimization`, MIT.)*
+
+**Audit what is loaded.** Run `/context` and `/plugin`. Every connected MCP server
+injects its whole tool list into the system prompt on every request, before the user
+has typed anything. A handful of unused connectors can cost tens of thousands of tokens
+on an empty session. Disable what this project does not need — configuration is
+per-project, not global.
+
+Red flags: more than three MCP servers loaded, plugins unrelated to the work, a
+five-figure token count on a fresh session.
+
+**Do not invalidate the cache mid-session.** Prompt caching covers the system
+instructions, the tool and MCP list, and the message history, in that order. Changing
+anything in a layer re-bills that layer and everything below it:
+
+| Action | Invalidates | Cost |
+|---|---|---|
+| Add an MCP server or tool mid-session | System instructions → everything | Very high |
+| Edit `CLAUDE.md` mid-session | System instructions → everything | Very high |
+| Load a new large file | Session state downwards | Moderate |
+
+So: configure before starting, not during. If something genuinely must be added
+mid-session, `/compact` first and start fresh from the summary rather than paying for
+the invalidation on every subsequent turn.
+
+**Fork context for heavy reads.** A subagent gets its own window. Send it to read the
+large thing and return notes; the raw text never enters the main session and never
+rides along in every later request. This is the same move as step 5 below, and it is
+worth making a habit rather than a last resort.
 
 ## Step 1 — Survey before you read
 

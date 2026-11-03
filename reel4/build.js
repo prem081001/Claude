@@ -102,7 +102,7 @@ i{position:absolute;display:block}
 #grid{position:relative;width:1080px;height:${CH}px}
 .gc{position:absolute;top:0;width:${CW}px;height:${CH}px;padding:12px;border:4px solid var(--ink);border-radius:6px;background:var(--stone)}
 .gc .fr{height:290px;border-style:solid}.gc .fr2{display:none}.gc .swc{bottom:0}.gc .swc>div{transform:scale(1.2)}
-#cta{margin-top:40px;width:1032px;height:400px;background:var(--terra);color:var(--stone);display:flex;align-items:center;justify-content:center;text-align:center;font-weight:800;font-size:54px;line-height:70px}
+#cta{margin-top:40px;width:1032px;height:400px;background:var(--terra);color:var(--stone);display:flex;align-items:center;justify-content:center;text-align:center;font-weight:800;font-size:60px;line-height:78px}
 #foot{margin-top:50px;text-align:center;color:#fff;font-size:36px;line-height:44px;font-weight:400}
 ${rules}${css}
 </style></head><body>
@@ -118,7 +118,7 @@ ${cardsHtml}
 <div id="st1" class="t st">Images</div><div id="st2" class="t st">Titles and descriptions</div><div id="st3" class="t st">Filters</div>
 <div id="sb"><div class="lb">Filters</div>${pillHtml}</div></div>
 <div id="sc4" class="sc"><div class="ctr"><div id="grid">${gridHtml}</div>
-<div id="cta">Message us the word CATALOGUE<br>to get your products listed.</div>
+<div id="cta">Message us CATALOGUE<br>to see how we can help<br>you with listing.</div>
 <div id="foot">Ecommerce Experts UK&nbsp;&nbsp;|&nbsp;&nbsp;ecommerceexpertsuk.com</div></div></div>
 </body></html>`;
 fs.writeFileSync(__dirname + '/reel-catalogue.html', out);

@@ -1,0 +1,59 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+@font-face{font-family:G;src:url(fonts/HindVadodara-Regular.ttf);font-weight:400}
+@font-face{font-family:G;src:url(fonts/HindVadodara-Bold.ttf);font-weight:700}
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:1080px;height:1920px;overflow:hidden;font-family:G,sans-serif;position:relative;
+background:#fff4de;background-image:radial-gradient(#f3d9a4 2px,transparent 2.5px);background-size:46px 46px}
+svg{position:absolute;left:0;top:0}
+.arch{position:absolute;left:110px;top:330px;width:860px;height:1180px;border-radius:430px 430px 40px 40px;
+background:linear-gradient(180deg,#1b2a6b 0%,#2a1a63 55%,#4a1250 100%);border:14px solid #e6a82a;
+box-shadow:0 0 0 10px #fff4de,0 0 0 18px #c8321f,0 30px 60px rgba(90,30,10,.35);text-align:center;color:#fff}
+.arch .in{position:absolute;inset:22px;border:3px dashed rgba(255,214,120,.7);border-radius:410px 410px 26px 26px}
+.t{position:absolute;width:100%}
+.om{top:120px;font-size:100px;color:#ffd35c}
+.g1{top:290px;font-size:110px;font-weight:700;color:#ffd35c;line-height:1.2}
+.g2{top:450px;font-size:64px;font-weight:700;color:#fff}
+.ln{top:590px;left:50%;width:380px;height:4px;transform:translateX(-50%);background:linear-gradient(90deg,transparent,#ffd35c,transparent)}
+.m{top:640px;font-size:46px;line-height:1.6;color:#fde9c4;padding:0 70px}
+.th{top:960px;font-size:38px;color:#ffd35c}
+.ban{position:absolute;left:60px;width:960px;top:1560px;height:150px;background:linear-gradient(90deg,#9e1b1b,#c8321f,#9e1b1b);
+border-radius:20px;border:6px solid #e6a82a;color:#ffe9a8;font-weight:700;font-size:78px;text-align:center;line-height:138px;
+box-shadow:0 14px 30px rgba(120,30,10,.35)}
+</style></head><body>
+<svg width="1080" height="1920" viewBox="0 0 1080 1920" id="s"></svg>
+<div class="arch"><div class="in"></div>
+ 
+ <div class="t g1">નૂતન<br>વર્ષાભિનંદન</div>
+ <div class="t g2" style="top:545px">સાલ મુબારક</div>
+ <div class="t ln" style="top:650px"></div>
+ <div class="t m" style="top:690px">આપને અને આપના પરિવારને<br>સુખ, સ્વાસ્થ્ય અને સમૃદ્ધિથી ભરેલું<br>નવું વર્ષ મુબારક!</div>
+ <div class="t th" style="top:1010px">આપના વિશ્વાસ બદલ આભાર</div>
+</div>
+<div class="ban">શ્રી ઉમિયા કિરાણા સ્ટોર</div>
+<script>
+const NS='http://www.w3.org/2000/svg',s=document.getElementById('s');
+function el(t,a,p){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);(p||s).appendChild(e);return e}
+// toran top
+el('rect',{x:0,y:0,width:1080,height:70,fill:'#9e1b1b'});
+el('rect',{x:0,y:62,width:1080,height:10,fill:'#e6a82a'});
+for(let i=0;i<9;i++){const x=60+i*120;
+ el('path',{d:`M${x-50} 72 L${x+50} 72 L${x} 190 Z`,fill:i%2?'#2f8f4e':'#e6561e'});
+ el('path',{d:`M${x-30} 72 L${x+30} 72 L${x} 140 Z`,fill:i%2?'#6fcf8a':'#ffb347'});
+ el('circle',{cx:x,cy:215,r:20,fill:'#ffb21f',stroke:'#e6561e','stroke-width':5});}
+// bottom marigolds
+for(let i=0;i<14;i++){const x=40+i*76,y=1830+(i%2)*14;
+ for(let k=0;k<8;k++)el('ellipse',{cx:x,cy:y-22,rx:11,ry:24,fill:i%2?'#ff9d1a':'#ffc21f',transform:`rotate(${k*45} ${x} ${y})`});
+ el('circle',{cx:x,cy:y,r:12,fill:'#c8321f'});}
+el('path',{d:'M0 1790 Q540 1750 1080 1790',stroke:'#2f8f4e','stroke-width':8,fill:'none'});
+// fireworks
+function fw(cx,cy,r,c){for(let k=0;k<16;k++){const a=k*22.5*Math.PI/180;
+ el('line',{x1:cx+Math.cos(a)*r*.35,y1:cy+Math.sin(a)*r*.35,x2:cx+Math.cos(a)*r,y2:cy+Math.sin(a)*r,stroke:c,'stroke-width':6,'stroke-linecap':'round'});
+ el('circle',{cx:cx+Math.cos(a)*r*1.18,cy:cy+Math.sin(a)*r*1.18,r:6,fill:c})}}
+fw(60,520,55,'#e6561e');fw(1030,640,60,'#c8321f');fw(50,1150,60,'#e6a82a');fw(1035,1320,55,'#2f8f4e');
+fw(70,1700,0.01,'#fff4de');
+// diyas flanking banner
+function diya(x,y){const g=el('g',{transform:`translate(${x},${y})`});
+ el('path',{d:'M0-70 C18-45 20-25 0-10 C-20-25 -18-45 0-70Z',fill:'#ffb21f'},g);
+ el('path',{d:'M-50 0 Q0 45 50 0 Q0 12 -50 0Z',fill:'#c8541a'},g)}
+diya(70,1760);diya(1010,1760);
+</script></body></html>

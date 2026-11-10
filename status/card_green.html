@@ -1,0 +1,52 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:1080px;height:1920px;overflow:hidden;font-family:Georgia,'DejaVu Serif',serif;
+background:radial-gradient(circle at 50% 38%,#3fbf8f 0%,#14805f 28%,#0a4a45 62%,#04191f 100%);position:relative;color:#fff3d6}
+.star{position:absolute;border-radius:50%;background:#ffe9a8;box-shadow:0 0 12px 4px rgba(255,220,120,.8)}
+.glow{position:absolute;left:50%;top:700px;width:900px;height:900px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(255,230,140,.45),transparent 65%)}
+.top{z-index:2;position:absolute;top:70px;width:100%;text-align:center;letter-spacing:6px;font-size:40px;font-weight:bold;color:#ffd978}
+.title{position:absolute;top:760px;width:100%;text-align:center}
+.title h1{font-size:92px;line-height:1.1;white-space:nowrap;color:#ffe08a;text-shadow:0 6px 24px rgba(0,0,0,.45);font-style:italic}
+.title h2{font-size:60px;margin-top:30px;letter-spacing:6px;color:#fff;font-weight:400}
+.line{width:420px;height:4px;margin:36px auto;background:linear-gradient(90deg,transparent,#ffd978,transparent)}
+.msg{position:absolute;top:1250px;width:100%;text-align:center;font-size:38px;line-height:1.45;padding:0 100px;color:#ffeccc}
+.sign{position:absolute;top:1530px;width:100%;text-align:center;font-size:40px;color:#ffd978;letter-spacing:3px}
+svg{position:absolute}
+</style></head><body>
+<div class="glow"></div>
+<div id="stars"></div>
+<svg style="left:140px;top:60px" width="800" height="800" viewBox="-400 -400 800 800">
+ <g id="r" transform="scale(.8)"></g>
+</svg>
+<div class="top">SHREE UMIYA KIRANA STORE</div>
+<div class="title"><h1>Nutan<br>Varshabhinandan</h1><div class="line"></div><h2>HAPPY NEW YEAR</h2></div>
+<div class="msg">Wishing you and your family<br>joy, health &amp; prosperity<br>this New Year.<br><span style="color:#ffd978;font-size:34px;letter-spacing:2px">Thank you for your trust &amp; support!</span></div>
+<!-- diyas -->
+<svg style="left:0;bottom:0" width="1080" height="330" viewBox="0 0 1080 330" id="diyas"></svg>
+<script>
+const NS='http://www.w3.org/2000/svg';
+// rangoli mandala
+const r=document.getElementById('r');
+function el(t,a,p){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);(p||r).appendChild(e);return e}
+const cols=['#ffd978','#ffb347','#fff3d6','#7fe3c0'];
+for(let ring=0;ring<3;ring++){const n=12+ring*4,rad=95+ring*85;
+ for(let i=0;i<n;i++){const a=360/n*i;
+  el('ellipse',{cx:0,cy:-rad,rx:18+ring*6,ry:44+ring*10,fill:cols[(i+ring)%4],opacity:.9-ring*.15,transform:`rotate(${a})`});
+  el('circle',{cx:0,cy:-rad-60-ring*14,r:6,fill:'#fff3d6',transform:`rotate(${a})`})}}
+el('circle',{r:50,fill:'#0a4a45',stroke:'#ffd978','stroke-width':6});
+el('circle',{r:26,fill:'#ffd978'});
+// diyas
+const d=document.getElementById('diyas');
+function diya(x,y,s){const g=document.createElementNS(NS,'g');g.setAttribute('transform',`translate(${x},${y}) scale(${s})`);
+ g.innerHTML=`<ellipse cx="0" cy="-70" rx="60" ry="90" fill="rgba(255,200,80,.25)"/>
+ <path d="M0-120 C28-80 30-50 0-30 C-30-50 -28-80 0-120Z" fill="#ffb21f"/>
+ <path d="M0-95 C14-72 14-55 0-42 C-14-55 -14-72 0-95Z" fill="#fff3a0"/>
+ <path d="M-90-30 Q0 70 90-30 Q0-8 -90-30Z" fill="#c0541a"/>
+ <path d="M-90-30 Q0-8 90-30" stroke="#ffd978" stroke-width="5" fill="none"/>
+ <rect x="-34" y="26" width="68" height="14" rx="6" fill="#8a3510"/>`;d.appendChild(g)}
+[[150,270,1.0],[360,290,.8],[540,280,1.1],[720,290,.8],[930,270,1.0]].forEach(a=>diya(...a));
+// stars
+const s=document.getElementById('stars');
+for(let i=0;i<60;i++){const e=document.createElement('div');e.className='star';const z=Math.random()*5+2;
+ e.style.cssText=`width:${z}px;height:${z}px;left:${Math.random()*1080}px;top:${Math.random()*1500}px;opacity:${Math.random()*.7+.3}`;s.appendChild(e)}
+</script></body></html>

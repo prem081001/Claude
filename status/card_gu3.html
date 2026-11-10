@@ -1,0 +1,50 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+@font-face{font-family:G;src:url(fonts/HindVadodara-Regular.ttf);font-weight:400}
+@font-face{font-family:G;src:url(fonts/HindVadodara-Bold.ttf);font-weight:700}
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:1080px;height:1920px;overflow:hidden;font-family:G,sans-serif;position:relative;background:#7a1fa2}
+svg{position:absolute;left:0;top:0}
+.t{position:absolute;width:100%;text-align:center}
+.pill{position:absolute;left:90px;width:900px;top:470px;height:130px;border-radius:65px;background:#fff;color:#b3125a;font-weight:700;font-size:70px;line-height:128px;text-align:center;box-shadow:0 10px 0 #ffcf3f}
+.circle{position:absolute;left:90px;top:680px;width:900px;height:900px;border-radius:50%;background:radial-gradient(circle,#fff9e6 0%,#ffe9a8 100%);border:16px solid #ffcf3f;box-shadow:0 0 0 14px #ff4f8b,0 30px 60px rgba(0,0,0,.35)}
+.c1{top:150px;font-size:106px;font-weight:700;color:#b3125a;line-height:1.2}
+.c2{top:480px;font-size:76px;font-weight:700;color:#e2531a}
+.c3{top:610px;font-size:46px;line-height:1.55;color:#4a1250;padding:0 90px}
+.foot{position:absolute;left:0;bottom:0;width:100%;height:240px;background:linear-gradient(180deg,#ffcf3f,#ff9d1a);clip-path:ellipse(75% 100% at 50% 100%);text-align:center;color:#7a1fa2;font-size:44px;font-weight:700;padding-top:110px}
+</style></head><body>
+<svg width="1080" height="1920" viewBox="0 0 1080 1920" id="s"></svg>
+<div class="pill">શ્રી ઉમિયા કિરાણા સ્ટોર</div>
+<div class="circle">
+ <div class="t c1">નૂતન<br>વર્ષાભિનંદન</div>
+ <div class="t c2" style="top:420px">સાલ મુબારક</div>
+ <div class="t c3" style="top:545px;font-size:42px">આપને અને આપના પરિવારને<br>સુખ, સ્વાસ્થ્ય અને સમૃદ્ધિથી ભરેલું<br>નવું વર્ષ મુબારક!</div>
+</div>
+<div class="foot">આપના વિશ્વાસ બદલ આભાર</div>
+<script>
+const NS='http://www.w3.org/2000/svg',s=document.getElementById('s');
+function el(t,a,p){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);(p||s).appendChild(e);return e}
+const defs=el('defs',{});const g=el('radialGradient',{id:'bg',cx:'50%',cy:'45%',r:'75%'},defs);
+el('stop',{offset:'0',['stop-color']:'#ff4f8b'},g);el('stop',{offset:'1',['stop-color']:'#5b1590'},g);
+el('rect',{width:1080,height:1920,fill:'url(#bg)'});
+// sunburst
+for(let i=0;i<24;i++){const a1=i*15,a2=a1+7.5,R=1500,cx=540,cy=1130;
+ const p=(a)=>[cx+R*Math.cos(a*Math.PI/180),cy+R*Math.sin(a*Math.PI/180)];
+ const [x1,y1]=p(a1),[x2,y2]=p(a2);el('path',{d:`M${cx} ${cy} L${x1} ${y1} L${x2} ${y2}Z`,fill:'rgba(255,255,255,.08)'});}
+// confetti
+const cols=['#ffcf3f','#ffffff','#44e0b0','#ff9d1a','#8fd3ff'];
+let seed=7;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
+for(let i=0;i<120;i++){const x=rnd()*1080,y=rnd()*1700,c=cols[i%5];
+ if(i%3==0)el('circle',{cx:x,cy:y,r:5+rnd()*6,fill:c});
+ else el('rect',{x,y,width:10+rnd()*10,height:6,fill:c,transform:`rotate(${rnd()*180} ${x} ${y})`});}
+// lanterns
+function lantern(x,len,sz,c){el('line',{x1:x,y1:0,x2:x,y2:len,stroke:'#ffcf3f','stroke-width':4});
+ const y=len;const g2=el('g',{});
+ el('rect',{x:x-sz*.3,y:y,width:sz*.6,height:sz*.18,rx:6,fill:'#ffcf3f'},g2);
+ el('path',{d:`M${x-sz*.5} ${y+sz*.18} Q${x-sz*.75} ${y+sz*.75} ${x-sz*.5} ${y+sz*1.3} L${x+sz*.5} ${y+sz*1.3} Q${x+sz*.75} ${y+sz*.75} ${x+sz*.5} ${y+sz*.18}Z`,fill:c},g2);
+ el('path',{d:`M${x-sz*.2} ${y+sz*.2} Q${x-sz*.4} ${y+sz*.75} ${x-sz*.2} ${y+sz*1.3} M${x+sz*.2} ${y+sz*.2} Q${x+sz*.4} ${y+sz*.75} ${x+sz*.2} ${y+sz*1.3}`,stroke:'rgba(255,255,255,.55)','stroke-width':4,fill:'none'},g2);
+ el('rect',{x:x-sz*.3,y:y+sz*1.3,width:sz*.6,height:sz*.14,rx:6,fill:'#ffcf3f'},g2);
+ el('line',{x1:x,y1:y+sz*1.44,x2:x,y2:y+sz*1.9,stroke:'#ffcf3f','stroke-width':5},g2);
+ el('circle',{cx:x,cy:y+sz*1.95,r:9,fill:'#ffcf3f'},g2);
+ el('circle',{cx:x,cy:y+sz*.75,r:sz*.4,fill:'rgba(255,240,150,.35)'},g2);}
+lantern(110,60,110,'#ff7a1a');lantern(300,20,80,'#ffb21f');lantern(540,70,95,'#e2231a');lantern(780,20,80,'#ffb21f');lantern(970,60,110,'#ff7a1a');
+</script></body></html>

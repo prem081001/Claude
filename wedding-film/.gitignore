@@ -5,3 +5,10 @@ frames/
 audio/*.wav
 # numbered checkpoint dumps; the named scene stills are kept
 shots/f*.png
+# the generated source illustrations are large; the trimmed layers are what the page loads
+art/*.png
+!art/t_*.png
+shots/
+shotsL/
+shotsNew/
+sheet/

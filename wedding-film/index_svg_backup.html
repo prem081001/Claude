@@ -1,0 +1,938 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Prem &amp; Vasudha — Save The Date</title>
+<style>
+  /* ==========================================================
+     1080x1920 · 22s · 30fps · 660 frames
+     DETERMINISM: every animation is a CSS @keyframes spanning the
+     full 22s, declared `paused`, with animation-delay: var(--t).
+     setFrame(n) sets --t to -(n/30)s, which scrubs every animation
+     on the page to exactly that instant. No clock, no rAF timing.
+     ========================================================== */
+  :root{ --t: 0s; }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html,body{ width:1080px; height:1920px; background:#120a14; overflow:hidden; }
+  body{
+    font-family:'Inter Display','Inter',system-ui,ui-sans-serif,'DejaVu Sans',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  #stage{ position:absolute; inset:0; width:1080px; height:1920px; }
+  svg{ display:block; }
+
+  /* every animated element wears .an and gets its name from .an-<x> */
+  .an{
+    animation-duration:22s;
+    animation-fill-mode:both;
+    animation-play-state:paused;
+    animation-delay:var(--t);
+    animation-timing-function:linear;
+    animation-iteration-count:1;
+  }
+
+  /* ---- rig: joints. transform-box:view-box resolves against each
+          character's OWN nested <svg> viewBox, so these are local
+          joint coordinates and every limb rotates from its joint. ---- */
+  .char       { overflow:visible; }
+  .shell      { transform-box:view-box; transform-origin:0px 0px; }
+  .body       { transform-box:view-box; transform-origin:0px 0px; }
+  .torso      { transform-box:view-box; transform-origin:0px -148px; }
+  .head       { transform-box:view-box; transform-origin:0px -250px; }
+  .leg-l      { transform-box:view-box; transform-origin:-16px -148px; }
+  .leg-r      { transform-box:view-box; transform-origin:16px -148px; }
+  .shin-l     { transform-box:view-box; transform-origin:-16px -74px; }
+  .shin-r     { transform-box:view-box; transform-origin:16px -74px; }
+  .arm-l      { transform-box:view-box; transform-origin:-30px -238px; }
+  .arm-r      { transform-box:view-box; transform-origin:30px -238px; }
+  .fore-l     { transform-box:view-box; transform-origin:-30px -190px; }
+  .fore-r     { transform-box:view-box; transform-origin:30px -190px; }
+  .turn       { transform-box:view-box; transform-origin:0px -292px; }
+  .faceg      { transform-box:view-box; transform-origin:0px -292px; }
+  .bodyturn   { transform-box:view-box; transform-origin:0px -200px; }
+  .eyes       { transform-box:view-box; transform-origin:0px -296px; }
+  .brows      { transform-box:view-box; transform-origin:0px -308px; }
+  .plait      { transform-box:view-box; transform-origin:-30px -270px; }
+  .dupatta    { transform-box:view-box; transform-origin:-30px -240px; }
+  .skirt      { transform-box:view-box; transform-origin:0px -150px; }
+
+  /* position groups live in the ROOT viewBox, so their origins are
+     stage coordinates — the character's ground point, so scaling
+     keeps the feet planted. */
+  .pos{ transform-box:view-box; transform-origin:540px 1480px; }
+
+  /* ---- scene 4 text ---- */
+  #copy{ position:absolute; inset:0; }
+  .tx{
+    position:absolute; left:12%; width:76%;      /* 12% safe margin */
+    text-align:center; color:#fdf4e3; white-space:nowrap;
+    transform-box:border-box; transform-origin:50% 50%;
+  }
+  #t-names{ top:742px;  font-size:84px; font-weight:800; letter-spacing:.055em; padding-left:.055em; }
+  #t-date { top:884px;  font-size:62px; font-weight:700; letter-spacing:.13em;  padding-left:.13em; color:#f5d98a; }
+  #t-std  { top:1002px; font-size:34px; font-weight:500; letter-spacing:.56em;  padding-left:.56em; color:#e9dcc4; }
+
+  /* ---- film grain + vignette over everything ---- */
+  #grain{
+    position:absolute; inset:-60px; z-index:60; pointer-events:none;
+    background-repeat:repeat; mix-blend-mode:overlay; opacity:.07;
+  }
+  #vig{
+    position:absolute; inset:0; z-index:61; pointer-events:none;
+    background:radial-gradient(118% 76% at 50% 48%, rgba(0,0,0,0) 40%, rgba(0,0,0,.30) 74%, rgba(0,0,0,.60) 100%);
+  }
+</style>
+</head>
+<body>
+<div id="stage">
+  <svg id="root" width="1080" height="1920" viewBox="0 0 1080 1920">
+    <defs>
+      <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0"   stop-color="#2a1430"/>
+        <stop offset=".46" stop-color="#5c2733"/>
+        <stop offset=".78" stop-color="#9c4a2e"/>
+        <stop offset="1"   stop-color="#d98b3f"/>
+      </linearGradient>
+      <radialGradient id="glow" cx=".5" cy=".72" r=".6">
+        <stop offset="0" stop-color="#ffcf84" stop-opacity=".55"/>
+        <stop offset="1" stop-color="#ffcf84" stop-opacity="0"/>
+      </radialGradient>
+      <linearGradient id="goldband" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0"   stop-color="#ffd98a" stop-opacity="0"/>
+        <stop offset=".32" stop-color="#ffe6ad" stop-opacity=".92"/>
+        <stop offset=".5"  stop-color="#fff4d6" stop-opacity="1"/>
+        <stop offset=".68" stop-color="#ffe6ad" stop-opacity=".92"/>
+        <stop offset="1"   stop-color="#ffd98a" stop-opacity="0"/>
+      </linearGradient>
+      <linearGradient id="goldstroke" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#ffdf9b"/><stop offset=".5" stop-color="#f6c25c"/><stop offset="1" stop-color="#e0a23f"/>
+      </linearGradient>
+      <linearGradient id="floor" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#b9663a"/>
+        <stop offset=".34" stop-color="#8a4028"/>
+        <stop offset="1" stop-color="#3d1a1e"/>
+      </linearGradient>
+      <radialGradient id="sparkle" cx=".5" cy=".5" r=".5">
+        <stop offset="0" stop-color="#fffdf5" stop-opacity="1"/>
+        <stop offset="1" stop-color="#ffe8a8" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+
+    <!-- backdrop -->
+    <rect width="1080" height="1920" fill="url(#sky)"/>
+    <ellipse cx="540" cy="1300" rx="640" ry="500" fill="url(#glow)"/>
+    <g id="bokeh"></g>
+    <!-- ground: a warm floor meeting the sky at y=1480, with a pool of light -->
+    <rect x="0" y="1480" width="1080" height="440" fill="url(#floor)"/>
+    <ellipse cx="540" cy="1496" rx="560" ry="86" fill="#ffc987" opacity=".16"/>
+    <ellipse cx="540" cy="1486" rx="330" ry="44" fill="#ffe0ab" opacity=".14"/>
+
+    <g id="scene4bg"></g>   <!-- mandap arch, drawn behind everyone -->
+    <g id="sc2bg"></g>      <!-- four family characters -->
+    <g id="petals"></g>
+    <g id="leads"></g>      <!-- Prem + Vasudha persist through all 4 scenes -->
+    <g id="props"></g>      <!-- chat bubble, heart, ring sparkle -->
+    <g id="confetti"></g>
+    <rect id="wipe" x="-200" y="0" width="1480" height="2600" fill="url(#goldband)" class="an" opacity="0"/>
+  </svg>
+  <div id="copy">
+    <div class="tx an" id="t-names">PREM &amp; VASUDHA</div>
+    <div class="tx an" id="t-date">24 . 01 . 2027</div>
+    <div class="tx an" id="t-std">SAVE THE DATE</div>
+  </div>
+  <div id="grain"></div>
+  <div id="vig"></div>
+</div>
+
+<script>
+/* ===================== timeline core ===================== */
+const LIGHT=false;          /* true = ivory backdrop, as in the reference sheets */
+const FPS=30, DUR=22, TOTAL=FPS*DUR;           // 660 frames
+const EASE='cubic-bezier(.45,.05,.2,1)';       // the house ease: soft in, soft out
+const SWING='cubic-bezier(.34,.1,.3,1)';
+let CSS='';
+
+/* kf(name, [[tSec, props, easeForSegmentStartingHere], ...])
+   props: a bare transform string, or "prop:val;prop:val" */
+function kf(name, steps){
+  let out='@keyframes '+name+'{';
+  steps.forEach(s=>{
+    const t=Math.max(0,Math.min(DUR,s[0]));
+    const pct=(t/DUR*100).toFixed(4);
+    let p=s[1];
+    if(p.indexOf(':')===-1) p='transform:'+p;
+    out+=pct+'%{'+p+';animation-timing-function:'+(s[2]||EASE)+'}';
+  });
+  CSS+=out+'}';
+  return name;
+}
+/* a looping sine, sampled every quarter period and eased between
+   extremes — reads as a continuous breath, stays deterministic */
+function swayKF(name, period, phase, fn){
+  const steps=[], q=period/4;
+  for(let t=0;t<=DUR+q;t+=q){
+    const tt=Math.min(t,DUR);
+    steps.push([tt, fn(Math.sin(2*Math.PI*((t+phase)/period))), 'ease-in-out']);
+    if(tt>=DUR) break;
+  }
+  return kf(name,steps);
+}
+/* opacity window with soft edges */
+function fadeKF(name, windows){
+  const s=[[0,'opacity:0','linear']];
+  windows.forEach(w=>{ s.push([w[0],'opacity:0','ease-in-out'],[w[1],'opacity:1','linear'],
+                              [w[2],'opacity:1','ease-in-out'],[w[3],'opacity:0','linear']); });
+  return kf(name,s);
+}
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);
+  t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+
+/* ===================== character factory =====================
+   Line art: flat fills, every form carried by a warm dark outline,
+   proportions around five heads tall.                                */
+const INK='#5d3a32', LW=2.6;
+const K=(f)=>`fill="${f}" stroke="${INK}" stroke-width="${LW}" stroke-linejoin="round" stroke-linecap="round"`;
+/* a small embroidery motif — reads as gold work at film size */
+function motif(x,y,c,sc){ sc=sc||1; return `<g transform="translate(${x},${y}) scale(${sc})">
+  <path d="M 0,-4 C 2.6,-4 2.6,0 0,0 C -2.6,0 -2.6,-4 0,-4 Z" fill="${c}"/>
+  <path d="M -4,0 C -4,2.6 0,2.6 0,0 C 0,-2.6 -4,-2.6 -4,0 Z" fill="${c}"/>
+  <path d="M 4,0 C 4,2.6 0,2.6 0,0 C 0,-2.6 4,-2.6 4,0 Z" fill="${c}"/>
+  <path d="M 0,4 C 2.6,4 2.6,0 0,0 C -2.6,0 -2.6,4 0,4 Z" fill="${c}"/></g>`; }
+
+function face(id,o){
+  return `<g class="faceg an an-${id}-face">
+    <ellipse cx="-24" cy="-285" rx="8" ry="5" fill="${o.blush}" opacity=".6"/>
+    <ellipse cx="24"  cy="-285" rx="8" ry="5" fill="${o.blush}" opacity=".6"/>
+    <g class="brows an an-${id}-brows">
+      <path d="M -20,-307 Q -13,-312 -7,-308" stroke="${INK}" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+      <path d="M 7,-308   Q 13,-312 20,-307"  stroke="${INK}" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+    </g>
+    <g class="eyes an an-${id}-eyes">
+      <ellipse cx="-13" cy="-296" rx="4.2" ry="5" fill="${INK}"/>
+      <ellipse cx="13"  cy="-296" rx="4.2" ry="5" fill="${INK}"/>
+    </g>
+    <path d="M -1,-291 Q 2,-286 -1,-284" stroke="${INK}" stroke-width="1.9" fill="none" stroke-linecap="round" opacity=".75"/>
+    <path d="M -7,-277 Q 0,-271 7,-277" stroke="${INK}" stroke-width="2.3" fill="none" stroke-linecap="round"/></g>`;
+}
+function arm(id,side,o){
+  const sx = side==='l' ? -30 : 30;
+  return `<g class="arm arm-${side} an an-${id}-arm${side}">
+    <path d="M ${sx-9},-241 Q ${sx},-246 ${sx+9},-241 L ${sx+8},-186 Q ${sx},-182 ${sx-8},-186 Z" ${K(o.sleeve)}/>
+    <g class="fore fore-${side} an an-${id}-fore${side}">
+      <path d="M ${sx-8},-194 Q ${sx},-198 ${sx+8},-194 L ${sx+7},-146 Q ${sx},-142 ${sx-7},-146 Z" ${K(o.sleeve)}/>
+      ${o.bangles ? `<path d="M ${sx-7.4},-150 Q ${sx},-146 ${sx+7.4},-150" stroke="${o.trim}" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+        <path d="M ${sx-7.2},-156 Q ${sx},-152 ${sx+7.2},-156" stroke="${o.band}" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+        <path d="M ${sx-7},-161 Q ${sx},-157 ${sx+7},-161" stroke="${o.trim}" stroke-width="2.6" fill="none" stroke-linecap="round"/>` : ''}
+      <path d="M ${sx-7.5},-145 Q ${sx-9},-131 ${sx-4},-128 Q ${sx},-126 ${sx+4},-128
+               Q ${sx+9},-131 ${sx+7.5},-145 Z" ${K(o.skin)}/>
+      ${o['prop'+side]||''}
+    </g></g>`;
+}
+function leg(id,side,o){
+  const hx = side==='l' ? -16 : 16, d = side==='l' ? -1 : 1;
+  return `<g class="leg leg-${side} an an-${id}-leg${side}">
+    <path d="M ${hx-11},-152 Q ${hx},-157 ${hx+11},-152 L ${hx+9},-70 Q ${hx},-66 ${hx-9},-70 Z" ${K(o.trouser)}/>
+    <g class="shin shin-${side} an an-${id}-shin${side}">
+      <path d="M ${hx-9},-79 Q ${hx},-83 ${hx+9},-79 L ${hx+8},-14 Q ${hx},-10 ${hx-8},-14 Z" ${K(o.trouser)}/>
+      <path d="M ${hx-8},-30 Q ${hx},-26 ${hx+8},-30 M ${hx-8},-22 Q ${hx},-18 ${hx+8},-22"
+            stroke="${INK}" stroke-width="1.7" fill="none" opacity=".5"/>
+      <path d="M ${hx-8},-13 L ${hx+8},-13 Q ${hx+10*d},-13 ${hx+13*d},-9
+               Q ${hx+19*d},-4 ${hx+19*d},-1 Q ${hx+19*d},3 ${hx+13*d},3
+               L ${hx-7*d},3 Q ${hx-9*d},3 ${hx-9*d},-1 Z" ${K(o.shoe)}/>
+    </g></g>`;
+}
+function makeChar(id,o){
+  const sherwani = `
+    <path d="M -30,-243 Q -24,-252 0,-254 Q 24,-252 30,-243 L 36,-108 Q 0,-101 -36,-108 Z" ${K(o.garment)}/>
+    <path d="M 0,-250 L 0,-104" stroke="${INK}" stroke-width="2" opacity=".55"/>
+    ${[-222,-200,-178,-156,-134].map(y=>`<circle cx="0" cy="${y}" r="2.8" fill="${o.trim}" stroke="${INK}" stroke-width="1.2"/>`).join('')}
+    ${motif(-19,-206,o.trim,.9)}${motif(-23,-166,o.trim,.9)}${motif(-18,-128,o.trim,.9)}
+    ${motif(20,-194,o.trim,.9)}${motif(24,-152,o.trim,.9)}
+    <path d="M -36,-108 Q 0,-101 36,-108" stroke="${o.trim}" stroke-width="3.4" fill="none"/>`;
+  const safa = `
+    <path d="M -42,-310 C -45,-346 -26,-364 0,-364 C 26,-364 45,-346 42,-310
+             C 22,-322 -22,-322 -42,-310 Z" ${K(o.hat)}/>
+    <path d="M -43,-314 C -22,-326 22,-326 43,-314" stroke="${INK}" stroke-width="2" fill="none" opacity=".6"/>
+    <path d="M -41,-327 C -22,-340 14,-350 37,-344" stroke="${INK}" stroke-width="2" fill="none" opacity=".5"/>
+    <path d="M 39,-324 C 51,-314 53,-296 47,-280 C 47,-294 42,-308 33,-316 Z" ${K(o.hatDk)}/>
+    <path d="M -2,-360 C -12,-376 -9,-392 2,-400 C -2,-386 -2,-372 2,-360 Z" fill="${o.trim}" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/>
+    <circle cx="0" cy="-352" r="7.5" fill="${o.trim}" stroke="${INK}" stroke-width="1.8"/>
+    <circle cx="0" cy="-352" r="2.8" fill="#8c1f2e"/>`;
+  const stole = `
+    <path d="M -28,-248 Q -14,-254 -4,-250 L 26,-104 Q 12,-99 2,-100 Z" ${K(o.stole)}/>
+    <path d="M -4,-250 L 26,-104" stroke="${o.trim}" stroke-width="2.4" fill="none" opacity=".9"/>`;
+
+  const choli = `
+    <path d="M -28,-243 Q -22,-252 0,-254 Q 22,-252 28,-243 L 30,-196 Q 0,-190 -30,-196 Z" ${K(o.garment)}/>
+    <path d="M -30,-198 Q 0,-192 30,-198" stroke="${o.trim}" stroke-width="3" fill="none"/>
+    <path d="M -24,-199 Q 0,-193 24,-199 L 23,-176 Q 0,-170 -23,-176 Z" ${K(o.skin)}/>`;
+  const lehenga = `
+    <g class="skirt an an-${id}-skirt">
+      <path d="M -26,-180 Q 0,-186 26,-180 L 82,-2 Q 0,15 -82,-2 Z" ${K(o.garment)}/>
+      <path d="M -56,-86 Q 0,-76 56,-86" stroke="${o.trim}" stroke-width="3" fill="none" opacity=".9"/>
+      <path d="M -82,-2 Q 0,15 82,-2 L 79,-26 Q 0,-9 -79,-26 Z" fill="${o.trim}" stroke="${INK}" stroke-width="2.2"/>
+      ${motif(-34,-52,o.trim)}${motif(0,-44,o.trim)}${motif(34,-52,o.trim)}
+      ${motif(-18,-110,o.trim,.85)}${motif(18,-110,o.trim,.85)}
+    </g>`;
+  /* the dupatta is worn over her head, framing the face, and falls both sides */
+  const veilHead = `
+    <path d="M -51,-206 L -51,-292 A 51,51 0 0 1 51,-292 L 51,-206 L 39,-206 L 39,-292
+             A 39,39 0 0 0 -39,-292 L -39,-206 Z" ${K(o.veil)}/>
+    <path d="M -39,-206 L -39,-292 A 39,39 0 0 1 39,-292 L 39,-206"
+          stroke="${o.trim}" stroke-width="3.2" fill="none"/>
+    <circle cx="-34" cy="-278" r="3.4" fill="${o.trim}" stroke="${INK}" stroke-width="1.2"/>
+    <path d="M -37.5,-275 L -30.5,-275 L -34,-268 Z" fill="${o.trim}" stroke="${INK}" stroke-width="1.1"/>
+    <circle cx="34" cy="-278" r="3.4" fill="${o.trim}" stroke="${INK}" stroke-width="1.2"/>
+    <path d="M 30.5,-275 L 37.5,-275 L 34,-268 Z" fill="${o.trim}" stroke="${INK}" stroke-width="1.1"/>`;
+  const hairFront = `
+    <path d="M -34,-300 C -36,-334 -20,-350 0,-350 C 20,-350 36,-334 34,-300
+             C 28,-318 16,-326 0,-326 C -16,-326 -28,-318 -34,-300 Z" ${K(o.hair)}/>
+    <path d="M 0,-350 L 0,-327" stroke="${INK}" stroke-width="1.8" opacity=".7"/>
+    <path d="M 0,-326 L 0,-316" stroke="${o.trim}" stroke-width="2.2"/>
+    <circle cx="0" cy="-313" r="3.6" fill="${o.trim}" stroke="${INK}" stroke-width="1.3"/>
+    <circle cx="0" cy="-306" r="2.4" fill="#b3243a"/>`;
+  const plait = `
+    <g class="plait an an-${id}-plait">
+      <path d="M -30,-270 C -40,-244 -42,-212 -39,-186 C -37,-172 -35,-164 -34,-158"
+            stroke="${INK}" stroke-width="14" fill="none" stroke-linecap="round"/>
+      <path d="M -30,-270 C -40,-244 -42,-212 -39,-186 C -37,-172 -35,-164 -34,-158"
+            stroke="${o.hair}" stroke-width="10.4" fill="none" stroke-linecap="round"/>
+      <path d="M -40,-240 q -5,3 0,6 M -41,-218 q -5,3 0,6 M -40,-196 q -5,3 0,6" stroke="${INK}" stroke-width="1.8" fill="none" stroke-linecap="round" opacity=".6"/>
+      ${[-230,-206,-182].map((y,i)=>`<circle cx="${-40+i}" cy="${y}" r="2.8" fill="${o.trim}" stroke="${INK}" stroke-width="1.1"/>`).join('')}
+      <path d="M -34,-158 l -5,11 l 10,0 Z" fill="${o.trim}" stroke="${INK}" stroke-width="1.3"/>
+    </g>`;
+  const veilTail = `
+    <g class="dupatta an an-${id}-dupatta">
+      <path d="M -50,-234 Q -70,-188 -74,-124 Q -77,-60 -70,-2 L -50,-4 Q -56,-62 -54,-124 Q -52,-186 -38,-228 Z"
+            ${K(o.veil)}/>
+      <path d="M -50,-234 Q -70,-188 -74,-124 Q -77,-60 -70,-2" stroke="${o.trim}" stroke-width="3" fill="none"/>
+    </g>`;
+  const simpleTop = `
+    <path d="M -28,-243 Q -22,-252 0,-254 Q 22,-252 28,-243 L 34,-112 Q 0,-105 -34,-112 Z" ${K(o.garment)}/>
+    <path d="M 0,-250 L 0,-108" stroke="${INK}" stroke-width="1.8" opacity=".45"/>`;
+
+  const torsoInner = o.kind==='lehenga' ? choli : (o.kind==='sherwani' ? sherwani : simpleTop);
+  return `<svg id="${id}" class="char" overflow="visible"
+            x="${o.cx-o.w/2}" y="${o.baseY-0.947368*(o.w*380/220)}"
+            width="${o.w}" height="${o.w*380/220}" viewBox="-110 -360 220 380">
+    <g class="shell an an-${id}-shell">
+    <ellipse cx="0" cy="7" rx="56" ry="11" fill="#2a0f14" opacity=".28"/>
+    <g class="body an an-${id}-body">
+      ${leg(id,'l',o)}
+      ${leg(id,'r',o)}
+      <g class="bodyturn an an-${id}-bturn">
+      <g class="torso an an-${id}-torso">
+        ${o.kind==='lehenga' ? lehenga : ''}
+        ${torsoInner}
+        ${o.kind==='sherwani' ? stole : ''}
+      </g>
+      </g>
+      <g class="head an an-${id}-head">
+        <g class="turn an an-${id}-turn">
+        <path d="M -8,-260 Q 0,-256 8,-260 L 8,-246 Q 0,-240 -8,-246 Z" ${K(o.skin)}/>
+        <circle cx="0" cy="-292" r="38" ${K(o.skin)}/>
+        ${face(id,o)}
+        ${o.kind==='lehenga' ? hairFront : ''}
+        ${o.kind==='sherwani' ? safa : ''}
+        ${o.kind==='simple'   ? (o.hatSimple||'') : ''}
+        ${o.kind==='lehenga'  ? veilHead : ''}
+        </g>
+      </g>
+      ${arm(id,'l',o)}
+      ${arm(id,'r',o)}
+      ${o.kind==='lehenga' ? veilTail + plait : ''}
+    </g></g></svg>`;
+}
+
+/* ===================== cast ===================== */
+const PHONE=(sx,rot)=>`<g class="an an-phone" style="transform-box:view-box;transform-origin:${sx}px -134px">
+     <rect x="${sx-13}" y="-158" width="26" height="42" rx="5" fill="#3a3340" stroke="${INK}" stroke-width="2" transform="rotate(${rot} ${sx} -134)"/>
+     <rect x="${sx-9}" y="-154" width="18" height="33" rx="2.5" fill="#d3e6ea" transform="rotate(${rot} ${sx} -134)"/>
+   </g>`;
+const RING=`<g class="an an-ringhold" style="transform-box:view-box;transform-origin:30px -134px">
+     <g class="an an-glint" style="transform-box:view-box;transform-origin:30px -146px">
+       <path d="M 30,-192 L 35,-158 L 69,-152 L 35,-146 L 30,-112 L 25,-146 L -9,-152 L 25,-158 Z" fill="url(#sparkle)"/></g>
+     <circle cx="30" cy="-148" r="7.5" fill="none" stroke="#e0a81f" stroke-width="3.4"/>
+     <circle cx="30" cy="-158" r="4.6" fill="#fff6dd" stroke="${INK}" stroke-width="1.4"/></g>`;
+const PREM={ kind:'sherwani', skin:'#eab889', skinSh:'#c9915f', blush:'#e9897b', hair:'#2e1a16', hairDk:'#1d100d', brow:'#5a3a2e',
+  garment:'#f3e4c8', garmentDk:'#d9c49f', sleeve:'#f3e4c8', sleeveDk:'#d2bc93', trim:'#cf9c33',
+  trouser:'#ece0c6', trouserDk:'#cdbe9e', shoe:'#c9952f', shoeDk:'#9e7019', stole:'#9e2a3c', hat:'#8e2436', hatDk:'#6b1826', propr:PHONE(33,-18)+RING };
+const VASU={ kind:'lehenga', skin:'#edbb92', skinSh:'#cb9468', blush:'#e07f7f', hair:'#241310', hairDk:'#120807', brow:'#4a2a22',
+  garment:'#c42a3c', garmentDk:'#9c1f2e', sleeve:'#c42a3c', sleeveDk:'#951d2b', trim:'#e8bc56',
+  trouser:'#b02433', trouserDk:'#8a1b27', shoe:'#d9a63c', shoeDk:'#ab7d20', veil:'#d4374a', band:'#8c1f2e', bangles:true, propl:PHONE(-33,16) };
+
+/* the two leads are ONE instance each, carried through all four scenes */
+document.getElementById('leads').innerHTML =
+  `<g class="pos an an-pos-prem">${makeChar('pm',Object.assign({cx:540,baseY:1480,w:404},PREM))}</g>` +
+  `<g class="pos an an-pos-vasu">${makeChar('vs',Object.assign({cx:540,baseY:1480,w:404},VASU))}</g>`;
+
+/* four muted family characters for scene 2 */
+const FAM=[
+  {id:'f1',cx:104,  w:250, c:'#6d5a72', t:'#8e7a93', hat:'#55465c'},
+  {id:'f2',cx:290,  w:268, c:'#7b6354', t:'#9a7f6c', hat:'#5f4a3e'},
+  {id:'f3',cx:792,  w:268, c:'#5d6b74', t:'#7d8c96', hat:'#49555d'},
+  {id:'f4',cx:978,  w:250, c:'#74626d', t:'#93808c', hat:'#5b4b55'}
+];
+document.getElementById('sc2bg').innerHTML = FAM.map(f=>makeChar(f.id,{
+  kind:'simple', cx:f.cx, baseY:1500, w:f.w,
+  skin:'#cda07e', skinSh:'#a87c5c', blush:'#cf8c7d', hair:'#3a2a28', hairDk:'#241917', brow:'#5e4038',
+  garment:f.c, garmentDk:f.c, sleeve:f.c, sleeveDk:'rgba(0,0,0,.28)', trim:f.t, trouser:f.c, trouserDk:'rgba(0,0,0,.28)', shoe:'#4a3b43', shoeDk:'#2b2227',
+  hatSimple:`<path d="M -41,-316 C -44,-350 -26,-368 0,-368 C 26,-368 44,-350 41,-316 C 22,-328 -22,-328 -41,-316 Z" fill="${f.hat}" stroke="${INK}" stroke-width="2.4" stroke-linejoin="round"/><path d="M -43,-314 C -22,-326 22,-326 43,-314" stroke="${INK}" stroke-width="1.8" fill="none" opacity=".5"/>`
+})).join('');
+</script>
+
+<script>
+/* ===================== ANIMATION · scene by scene =====================
+   Scene 1  0.0– 5.0  the message
+   Scene 2  5.0–10.0  the families
+   Scene 3 10.0–15.0  the ring
+   Scene 4 15.0–22.0  the date
+   Transitions are gold-light curtains at 5 / 10 / 15 — never a hard cut.
+   ====================================================================== */
+const T1=5, T2=10, T3=15;
+
+/* ---------- position of the two leads across the whole film ----------
+   translate/scale on a group whose origin is the character's ground point,
+   so the feet stay planted when they scale.                             */
+kf('pos-prem',[
+  [0,    'translate(-242px,0px) scale(.92)'],
+  [4.7,  'translate(-242px,0px) scale(.92)'],
+  [5.3,  'translate(-112px,0px) scale(.80)'],       // steps in beside the families
+  [9.7,  'translate(-112px,0px) scale(.80)'],
+  [10.3, 'translate(-186px,0px) scale(1)'],         // closer for the ring
+  [14.7, 'translate(-186px,0px) scale(1)'],
+  [15.3, 'translate(-80px,132px) scale(.72)'],      // final two-shot, lower in frame
+  [22,   'translate(-80px,132px) scale(.72)']
+]);
+kf('pos-vasu',[
+  [0,    'translate(228px,0px) scale(.92)'],
+  [4.7,  'translate(228px,0px) scale(.92)'],
+  [5.3,  'translate(112px,0px) scale(.80)'],
+  [9.7,  'translate(112px,0px) scale(.80)'],
+  [10.3, 'translate(152px,0px) scale(1)'],
+  [14.7, 'translate(152px,0px) scale(1)'],
+  [15.3, 'translate(74px,128px) scale(.82)'],
+  [22,   'translate(74px,128px) scale(.82)']
+]);
+
+/* ---------- PREM ---------- */
+/* body: stands, then kneels (whole body drops as the knee folds), then sways */
+kf('pm-body',[
+  [0,   'translate(0px,0px)','ease-in-out'],
+  [10.5,'translate(0px,0px)'],
+  [10.8,'translate(0px,-8px)'],
+  [12.0,'translate(0px,68px)'],
+  [12.26,'translate(0px,74px)','ease-out'],
+  [12.62,'translate(0px,68px)'],
+  [15.0,'translate(0px,68px)'],
+  [15.8,'translate(0px,-6px)'],
+  [16.3,'translate(0px,0px)'],
+  [22,  'translate(0px,0px)']]);
+/* a real knee fold: hip swings back, shin folds under, front leg takes the weight */
+kf('pm-legl',[[0,'rotate(0deg)'],[10.5,'rotate(0deg)'],[10.8,'rotate(0deg)'],[12.0,'rotate(0deg)'],[15.0,'rotate(0deg)'],[15.9,'rotate(0deg)'],[22,'rotate(0deg)']]);
+kf('pm-shinl',[[0,'rotate(0deg)'],[10.5,'rotate(0deg)'],[10.8,'rotate(0deg)'],[12.0,'rotate(85deg)'],[15.0,'rotate(85deg)'],[15.9,'rotate(0deg)'],[22,'rotate(0deg)']]);
+kf('pm-legr',[[0,'rotate(0deg)'],[10.5,'rotate(0deg)'],[10.8,'rotate(0deg)'],[12.0,'rotate(-70deg)'],[15.0,'rotate(-70deg)'],[15.9,'rotate(0deg)'],[22,'rotate(0deg)']]);
+kf('pm-shinr',[[0,'rotate(0deg)'],[10.5,'rotate(0deg)'],[10.8,'rotate(0deg)'],[12.0,'rotate(100deg)'],[15.0,'rotate(100deg)'],[15.9,'rotate(0deg)'],[22,'rotate(0deg)']]);
+/* torso: leans over the phone, straightens in surprise, leans in to propose */
+kf('pm-torso',[
+  [0,   'rotate(5deg)'],
+  [3.0, 'rotate(5deg)'],
+  [3.9, 'rotate(-3deg)'],                              /* pulls upright, surprised */
+  [5.0, 'rotate(-1deg)'],
+  [10.6,'rotate(-1deg)'],
+  [12.0,'rotate(4deg)'],
+  [15.9,'rotate(0deg)'],
+  [22,  'rotate(0deg)']
+]);
+/* head: down at the phone → snaps up (eased, 0.7s) → turns to her → forward */
+kf('pm-head',[
+  [0,   'rotate(9deg)'],
+  [3.1, 'rotate(9deg)'],
+  [3.8, 'rotate(-7deg)'],                              /* looks up */
+  [5.0, 'rotate(-4deg)'],
+  [6.6, 'rotate(-4deg)'],
+  [7.4, 'rotate(8deg)'],                               /* toward the centre */
+  [10.4,'rotate(8deg)'],
+  [11.6,'rotate(4deg)'],
+  [15.3,'rotate(4deg)'],
+  [16.1,'rotate(0deg)'],
+  [22,  'rotate(0deg)']
+]);
+/* right arm holds the phone, then offers the ring up to her */
+kf('pm-armr',[
+  [0,   'rotate(-35deg)'],
+  [3.02,'rotate(-35deg)','cubic-bezier(.3,0,.2,1)'],
+  [3.18,'rotate(-31deg)'],
+  [3.85,'rotate(-44deg)'],
+  [5.0, 'rotate(-14deg)'],
+  [9.8, 'rotate(-8deg)'],
+  [11.75,'rotate(-2deg)'],
+  [12.75,'rotate(-30deg)'],
+  [15.0,'rotate(-28deg)'],
+  [16.1,'rotate(-6deg)'],
+  [22,  'rotate(-6deg)']]);
+kf('pm-forer',[
+  [0,   'rotate(101deg)'],
+  [3.02,'rotate(101deg)','cubic-bezier(.3,0,.2,1)'],
+  [3.18,'rotate(106deg)'],
+  [3.85,'rotate(84deg)'],
+  [5.0, 'rotate(24deg)'],
+  [9.8, 'rotate(8deg)'],
+  [12.75,'rotate(-80deg)'],
+  [15.0,'rotate(-77deg)'],
+  [16.1,'rotate(2deg)'],
+  [22,  'rotate(2deg)']]);
+/* left arm: relaxed, celebrates a touch in scene 2, steadies the knee in 3 */
+kf('pm-arml',[
+  [0,   'rotate(-6deg)'],[5.2,'rotate(-6deg)'],[7.6,'rotate(-2deg)'],
+  [8.4, 'rotate(142deg)'],[9.0,'rotate(134deg)'],[9.4,'rotate(140deg)'],
+  [12.0,'rotate(8deg)'],[16.1,'rotate(-5deg)'],[22,'rotate(-5deg)']]);
+kf('pm-forel',[[0,'rotate(5deg)'],[7.6,'rotate(6deg)'],[8.4,'rotate(-26deg)'],
+  [9.4,'rotate(-22deg)'],[12.0,'rotate(4deg)'],[16.1,'rotate(2deg)'],[22,'rotate(2deg)']]);
+/* eyebrows lift on the buzz and stay a little raised — surprise */
+kf('pm-brows',[
+  [0,'translateY(0px)'],[3.05,'translateY(0px)'],[3.5,'translateY(-7px)','ease-out'],
+  [4.6,'translateY(-4px)'],[6.0,'translateY(-1px)'],[12.4,'translateY(-5px)'],
+  [13.6,'translateY(-1px)'],[22,'translateY(-1px)']
+]);
+
+/* ---------- VASUDHA ---------- */
+/* sits for scene 1 (body drops and settles), stands from 5s on */
+kf('vs-body',[
+  [0,   'translate(0px,70px)'],[4.7,'translate(0px,70px)'],[5.05,'translate(0px,75px)'],
+  [5.4, 'translate(0px,-7px)'],[5.75,'translate(0px,0px)'],[22,'translate(0px,0px)']]);
+kf('vs-legl',[[0,'rotate(-72deg)'],[4.7,'rotate(-72deg)'],[5.5,'rotate(0deg)'],[22,'rotate(0deg)']]);
+kf('vs-shinl',[[0,'rotate(80deg)'],[4.7,'rotate(80deg)'],[5.5,'rotate(0deg)'],[22,'rotate(0deg)']]);
+kf('vs-legr',[[0,'rotate(-60deg)'],[4.7,'rotate(-60deg)'],[5.5,'rotate(0deg)'],[22,'rotate(0deg)']]);
+kf('vs-shinr',[[0,'rotate(72deg)'],[4.7,'rotate(72deg)'],[5.5,'rotate(0deg)'],[22,'rotate(0deg)']]);
+kf('vs-torso',[
+  [0,'rotate(-6deg)'],[4.7,'rotate(-6deg)'],[5.3,'rotate(0deg)'],
+  [12.2,'rotate(0deg)'],[13.0,'rotate(-4deg)'],[15.9,'rotate(0deg)'],[22,'rotate(0deg)']
+]);
+kf('vs-head',[
+  [0,   'rotate(-10deg)'],                              /* reading her phone */
+  [2.6, 'rotate(-8deg)'],
+  [3.4, 'rotate(-2deg)'],
+  [5.0, 'rotate(-4deg)'],
+  [6.6, 'rotate(-4deg)'],
+  [7.4, 'rotate(-9deg)'],                               /* turns to the centre */
+  [10.4,'rotate(-9deg)'],
+  [12.2,'rotate(-5deg)'],
+  [13.2,'rotate(-11deg)'],                              /* tilts behind her hands */
+  [15.3,'rotate(-8deg)'],
+  [16.1,'rotate(0deg)'],
+  [22,  'rotate(0deg)']
+]);
+/* her left arm holds the phone up in scene 1; both hands fly to her face in scene 3 */
+kf('vs-arml',[
+  [0,   'rotate(35deg)'],
+  [5.0, 'rotate(33deg)'],
+  [5.8, 'rotate(5deg)'],
+  [12.2,'rotate(5deg)','cubic-bezier(.3,0,.2,1)'],
+  [12.45,'rotate(-5deg)'],
+  [13.2,'rotate(119deg)'],
+  [15.2,'rotate(115deg)'],
+  [16.1,'rotate(4deg)'],
+  [22,  'rotate(4deg)']]);
+kf('vs-forel',[
+  [0,'rotate(-101deg)'],[5.0,'rotate(-98deg)'],[5.8,'rotate(-6deg)'],
+  [12.2,'rotate(-6deg)'],[12.45,'rotate(2deg)'],[13.2,'rotate(129deg)'],[15.2,'rotate(125deg)'],
+  [16.1,'rotate(-2deg)'],[22,'rotate(-2deg)']]);
+kf('vs-armr',[
+  [0,   'rotate(-8deg)'],[5.8,'rotate(-8deg)'],
+  [12.2,'rotate(-8deg)','cubic-bezier(.3,0,.2,1)'],[12.45,'rotate(3deg)'],
+  [13.2,'rotate(-119deg)'],[15.2,'rotate(-115deg)'],[16.1,'rotate(-9deg)'],[22,'rotate(-9deg)']]);
+kf('vs-forer',[
+  [0,'rotate(5deg)'],[5.8,'rotate(5deg)'],[12.2,'rotate(5deg)'],[12.45,'rotate(-2deg)'],
+  [13.2,'rotate(-129deg)'],[15.2,'rotate(-125deg)'],[16.1,'rotate(3deg)'],[22,'rotate(3deg)']]);
+kf('vs-brows',[[0,'translateY(0px)'],[12.4,'translateY(0px)'],[13.0,'translateY(-6px)'],
+               [14.6,'translateY(-2px)'],[22,'translateY(-2px)']]);
+
+/* idle life: sway, plait, dupatta, blinks */
+swayKF('sway-a',4.4,0,v=>'rotate('+(v*1.5).toFixed(2)+'deg)');
+swayKF('sway-b',4.4,2.2,v=>'rotate('+(v*1.5).toFixed(2)+'deg)');
+swayKF('plait',3.6,0,  v=>'rotate('+(v*4.5).toFixed(2)+'deg)');
+swayKF('veil', 5.0,1.1,v=>'rotate('+(v*3.6).toFixed(2)+'deg) skewX('+(v*2.4).toFixed(2)+'deg)');
+/* blinks: eyes squash shut for ~0.1s at a few moments, never in sync */
+function blinkKF(name,times){
+  const s=[[0,'transform:scaleY(1)','linear']];
+  times.forEach(t=>{ s.push([t-0.09,'transform:scaleY(1)','ease-in'],[t,'transform:scaleY(.08)','ease-out'],
+                            [t+0.1,'transform:scaleY(1)','linear']); });
+  return kf(name,s);
+}
+blinkKF('blink-p',[1.4,4.3,6.9,9.6,13.4,17.2,20.1]);
+kf('none-a',[[0,'opacity:1','linear'],[22,'opacity:1','linear']]);
+blinkKF('blink-v',[2.2,5.4,8.1,11.3,14.2,18.6,21.2]);
+
+kf('phone',[[0,'opacity:1','linear'],[4.35,'opacity:1','ease-in-out'],[4.8,'opacity:0','linear'],[22,'opacity:0']]);
+/* the buzz: a short, tight shake — 0.45s of it, then stillness */
+kf('buzz',(()=>{const s=[[0,'transform:rotate(0deg) translate(0px,0px)','linear'],
+  [2.98,'transform:rotate(0deg) translate(0px,0px)','linear']];
+  for(let k=0;k<=14;k++){const t=3.0+k*0.032, a=(k%2?1:-1)*(3.4*(1-k/15));
+    s.push([t,'transform:rotate('+a.toFixed(2)+'deg) translate('+(a*0.5).toFixed(2)+'px,0px)','linear']);}
+  s.push([3.52,'transform:rotate(0deg) translate(0px,0px)','linear'],[22,'transform:rotate(0deg) translate(0px,0px)','linear']);
+  return s;})());
+
+
+/* ---------- three-quarter turns, from the reference pose sheet ---------- */
+kf('pm-turn',[
+  [0,'scaleX(.93)'],[3.6,'scaleX(.93)'],[4.3,'scaleX(.90)'],
+  [6.6,'scaleX(.90)'],[7.4,'scaleX(.88)'],
+  [10.4,'scaleX(.88)'],[11.6,'scaleX(.86)'],      /* turns to her for the proposal */
+  [15.3,'scaleX(.86)'],[16.2,'scaleX(.95)'],      /* opens out to camera */
+  [22,'scaleX(.95)']
+]);
+kf('pm-face',[
+  [0,'translateX(4px)'],[3.6,'translateX(4px)'],[4.3,'translateX(7px)'],
+  [6.6,'translateX(7px)'],[7.4,'translateX(10px)'],
+  [10.4,'translateX(10px)'],[11.6,'translateX(12px)'],
+  [15.3,'translateX(12px)'],[16.2,'translateX(3px)'],
+  [22,'translateX(3px)']
+]);
+kf('pm-bturn',[
+  [0,'scaleX(.97)'],[7.4,'scaleX(.95)'],[11.6,'scaleX(.93)'],
+  [16.2,'scaleX(.99)'],[22,'scaleX(.99)']
+]);
+kf('vs-turn',[
+  [0,'scaleX(.92)'],[5.4,'scaleX(.92)'],[7.4,'scaleX(.88)'],
+  [10.4,'scaleX(.88)'],[12.2,'scaleX(.86)'],
+  [15.3,'scaleX(.86)'],[16.2,'scaleX(.95)'],
+  [22,'scaleX(.95)']
+]);
+kf('vs-face',[
+  [0,'translateX(-6px)'],[5.4,'translateX(-6px)'],[7.4,'translateX(-10px)'],
+  [10.4,'translateX(-10px)'],[12.2,'translateX(-12px)'],
+  [15.3,'translateX(-12px)'],[16.2,'translateX(-3px)'],
+  [22,'translateX(-3px)']
+]);
+kf('vs-bturn',[
+  [0,'scaleX(.97)'],[7.4,'scaleX(.95)'],[12.2,'scaleX(.93)'],
+  [16.2,'scaleX(.99)'],[22,'scaleX(.99)']
+]);
+kf('turn-none',[[0,'scaleX(1)'],[22,'scaleX(1)']]);
+kf('face-none',[[0,'translateX(0px)'],[22,'translateX(0px)']]);
+
+/* ---------- scene 2: the families ---------- */
+FAM.forEach((f,i)=>{
+  const t0=5.25+i*0.22;
+  kf(f.id+'-shell',[
+    [0,'opacity:0;transform:translateY(40px)','linear'],
+    [t0,'opacity:0;transform:translateY(40px)'],
+    [t0+0.9,'opacity:1;transform:translateY(0px)'],
+    [9.6,'opacity:1;transform:translateY(0px)','ease-in-out'],
+    [10.2,'opacity:0;transform:translateY(0px)','linear'],
+    [22,'opacity:0;transform:translateY(0px)']
+  ]);
+  /* every one of them turns their head to the centre, staggered and eased */
+  const turn = f.cx<540 ? 21 : -21;
+  kf(f.id+'-head',[
+    [0,'rotate(0deg)'],[6.7+i*0.12,'rotate(0deg)'],[7.5+i*0.12,'rotate('+turn+'deg)'],
+    [10,'rotate('+turn+'deg)'],[22,'rotate('+turn+'deg)']
+  ]);
+});
+/* f2 throws both arms up in celebration */
+kf('f2-arml',[[0,'rotate(-6deg)'],[7.7,'rotate(-6deg)'],[8.5,'rotate(142deg)'],[9.0,'rotate(134deg)'],[9.9,'rotate(142deg)'],[22,'rotate(142deg)']]);
+kf('f2-armr',[[0,'rotate(6deg)'],[7.7,'rotate(6deg)'],[8.5,'rotate(-142deg)'],[9.0,'rotate(-134deg)'],[9.9,'rotate(-142deg)'],[22,'rotate(-142deg)']]);
+kf('f2-forel',[[0,'rotate(0deg)'],[7.7,'rotate(0deg)'],[8.5,'rotate(-24deg)'],[22,'rotate(-24deg)']]);
+kf('f2-forer',[[0,'rotate(0deg)'],[7.7,'rotate(0deg)'],[8.5,'rotate(24deg)'],[22,'rotate(24deg)']]);
+/* and a little bounce of joy under him */
+kf('f2-bodyhop',[[0,'translateY(0px)'],[8.5,'translateY(0px)'],[8.8,'translateY(-16px)','ease-out'],
+                 [9.15,'translateY(0px)','ease-in'],[9.3,'translateY(-7px)','ease-out'],
+                 [9.6,'translateY(0px)'],[22,'translateY(0px)']]);
+</script>
+
+<script>
+/* ===================== props, particles, scenery ===================== */
+const rnd=mulberry32(20270124);
+
+/* ---- scene 1: chat bubble with three bouncing dots, and the heart ---- */
+document.getElementById('props').innerHTML = `
+  <g id="bubble" class="an an-bubble">
+    <path d="M 0,0 h 196 a 26,26 0 0 1 26,26 v 96 a 26,26 0 0 1 -26,26 h -126 l -34,30 v -30 h -36
+             a 26,26 0 0 1 -26,-26 v -96 a 26,26 0 0 1 26,-26 z" fill="#fdf3e0"/>
+    <circle class="an an-dot1" cx="62"  cy="74" r="13" fill="#b4707a"/>
+    <circle class="an an-dot2" cx="110" cy="74" r="13" fill="#b4707a"/>
+    <circle class="an an-dot3" cx="158" cy="74" r="13" fill="#b4707a"/>
+  </g>
+  <g id="heart" class="an an-heart">
+    <path d="M 0,8 C -14,-6 -26,-14 -26,-26 C -26,-36 -18,-42 -9,-42 C -3,-42 1,-38 0,-34
+             C -1,-38 3,-42 9,-42 C 18,-42 26,-36 26,-26 C 26,-14 14,-6 0,8 Z" fill="#ef6b7d"/>
+  </g>
+  <g id="seat" class="an an-seat">
+    <ellipse cx="766" cy="1618" rx="196" ry="56" fill="#8e1f2e"/>
+    <ellipse cx="766" cy="1600" rx="184" ry="50" fill="#c42a3c"/>
+    <path d="M 582,1600 a 184,50 0 0 0 368,0" fill="none" stroke="#e8bc56" stroke-width="7"/>
+    <circle cx="700" cy="1582" r="5" fill="#e8bc56" opacity=".9"/>
+    <circle cx="766" cy="1590" r="5" fill="#e8bc56" opacity=".9"/>
+    <circle cx="832" cy="1582" r="5" fill="#e8bc56" opacity=".9"/>
+  </g>
+  </g>`;
+
+
+kf('bubble',[
+  [0,   'opacity:0;transform:translate(676px,802px) scale(.2)','linear'],
+  [1.0, 'opacity:0;transform:translate(676px,802px) scale(.2)','cubic-bezier(.2,1.5,.4,1)'],
+  [1.7, 'opacity:1;transform:translate(676px,802px) scale(1)','linear'],
+  [4.3, 'opacity:1;transform:translate(676px,802px) scale(1)','ease-in-out'],
+  [4.9, 'opacity:0;transform:translate(676px,802px) scale(.86)','linear'],
+  [22,  'opacity:0;transform:translate(676px,802px) scale(.86)']
+]);
+/* three dots, bouncing out of phase — a 0.9s cycle held for the bubble's life */
+[1,2,3].forEach(i=>{
+  const ph=(i-1)*0.3, s=[[0,'transform:translateY(0px)','linear']];
+  for(let t=1.7;t<=4.4;t+=0.15){
+    const v=Math.sin(2*Math.PI*((t-1.7+ph)/0.9));
+    s.push([t,'transform:translateY('+(Math.max(0,v)*-11).toFixed(2)+'px)','ease-in-out']);
+  }
+  s.push([4.5,'transform:translateY(0px)','linear'],[22,'transform:translateY(0px)','linear']);
+  kf('dot'+i,s);
+});
+/* the heart lifts off his phone and drifts off the top of frame */
+kf('heart',[
+  [0,   'opacity:0;transform:translate(322px,1148px) scale(.3)','linear'],
+  [3.55,'opacity:0;transform:translate(322px,1148px) scale(.3)','ease-out'],
+  [4.0, 'opacity:.95;transform:translate(310px,1040px) scale(1)','linear'],
+  [4.8, 'opacity:.85;transform:translate(352px,860px) scale(1.06)','linear'],
+  [5.6, 'opacity:0;transform:translate(300px,648px) scale(1.1)','linear'],
+  [22,  'opacity:0;transform:translate(300px,648px) scale(1.1)']
+]);
+/* the ring appears in his raised hand, with a glint that rotates */
+kf('ringhold',[
+  [0,'opacity:0','linear'],[12.45,'opacity:0','cubic-bezier(.2,1.4,.4,1)'],
+  [12.95,'opacity:1','linear'],[14.95,'opacity:1','ease-in-out'],
+  [15.3,'opacity:0','linear'],[22,'opacity:0']
+]);
+kf('glint',[
+  [0,'opacity:0;transform:rotate(0deg) scale(.4)','linear'],
+  [12.95,'opacity:0;transform:rotate(0deg) scale(.4)','linear'],
+  [13.35,'opacity:1;transform:rotate(150deg) scale(1.15)','linear'],
+  [13.95,'opacity:.5;transform:rotate(290deg) scale(.75)','linear'],
+  [14.45,'opacity:1;transform:rotate(440deg) scale(1.2)','linear'],
+  [15.1,'opacity:0;transform:rotate(570deg) scale(.5)','linear'],
+  [22,'opacity:0;transform:rotate(570deg) scale(.5)']
+]);
+
+kf('seat',[[0,'opacity:1','linear'],[4.4,'opacity:1','ease-in-out'],[4.85,'opacity:0','linear'],[22,'opacity:0']]);
+
+/* ---- scene 2: confetti, one burst from the top, swaying down ---- */
+let conf='';
+for(let i=0;i<78;i++){
+  const x=40+rnd()*1000, sway=30+rnd()*62, dir=rnd()<.5?-1:1;
+  const t0=7.75+rnd()*0.5, dur=2.3+rnd()*1.5;
+  const w=15+rnd()*13, h=10+rnd()*9, spin=(180+rnd()*520)*(rnd()<.5?-1:1);
+  const col=['#f6c85a','#e8556d','#f29b45','#f7e7c2','#c0557f','#5fb6a8'][(rnd()*6)|0];
+  const nm='cf'+i, steps=[[0,'opacity:0;transform:translate('+x+'px,-70px) rotate(0deg)','linear'],
+                          [t0,'opacity:0;transform:translate('+x+'px,-70px) rotate(0deg)','linear']];
+  const N=8;
+  for(let k=0;k<=N;k++){
+    const p=k/N, y=-70+p*2060;
+    const dx=Math.sin(p*Math.PI*2.4)*sway*dir;
+    const op=p<0.08?1:(p>0.8?(1-(p-0.8)/0.2):1);
+    steps.push([t0+dur*p,'opacity:'+op.toFixed(2)+';transform:translate('+(x+dx).toFixed(1)+'px,'+y.toFixed(0)+'px) rotate('+(spin*p).toFixed(0)+'deg)','linear']);
+  }
+  steps.push([Math.min(21.9,t0+dur+0.05),'opacity:0','linear'],[22,'opacity:0','linear']);
+  kf(nm,steps);
+  conf+=`<rect class="an an-${nm}" x="${-w/2}" y="${-h/2}" width="${w}" height="${h}" rx="2" fill="${col}"/>`;
+}
+document.getElementById('confetti').innerHTML=conf;
+
+/* ---- scene 3: a ring of marigold petals expanding outward ---- */
+let pet='';
+for(let i=0;i<44;i++){
+  const a=(i/44)*Math.PI*2+rnd()*0.12, R=300+rnd()*170;
+  const t0=12.5+ (i%6)*0.05 + rnd()*0.14, dur=1.9+rnd()*0.7;
+  const col=['#f2a93b','#e8862c','#f6c45c','#dd6f2a'][(rnd()*4)|0];
+  const rot=(rnd()*360)|0, sp=(rnd()*300-150)|0;
+  kf('pt'+i,[
+    [0,'opacity:0;transform:translate(540px,1255px) rotate('+rot+'deg) scale(0)','linear'],
+    [t0,'opacity:0;transform:translate(540px,1255px) rotate('+rot+'deg) scale(0)','cubic-bezier(.16,.8,.3,1)'],
+    [t0+0.3,'opacity:1;transform:translate('+(540+Math.cos(a)*R*0.35).toFixed(0)+'px,'+(1255+Math.sin(a)*R*0.35).toFixed(0)+'px) rotate('+(rot+sp*0.35)+'deg) scale(1.1)','cubic-bezier(.16,.8,.3,1)'],
+    [t0+dur,'opacity:0;transform:translate('+(540+Math.cos(a)*R).toFixed(0)+'px,'+(1255+Math.sin(a)*R).toFixed(0)+'px) rotate('+(rot+sp)+'deg) scale(.6)','linear'],
+    [22,'opacity:0','linear']
+  ]);
+  pet+=`<ellipse class="an an-pt${i}" cx="0" cy="0" rx="19" ry="12" fill="${col}"/>`;
+}
+document.getElementById('petals').innerHTML=pet;
+
+/* ---- scene 4: the mandap, drawn with stroke-dashoffset ---- */
+const ARCH="M 214,1452 L 214,742 C 214,470 360,360 540,360 C 720,360 866,470 866,742 L 866,1452";
+let strings='';
+{
+ const probe=document.createElementNS('http://www.w3.org/2000/svg','path');
+ probe.setAttribute('d',ARCH);
+ const PL=probe.getTotalLength(), pts=[];
+ for(let k=0;k<=600;k++){ const pt=probe.getPointAtLength(PL*k/600); if(pt.y<738) pts.push(pt); }
+ const lo=Math.round(pts.length*0.12), hi=Math.round(pts.length*0.88);
+ for(let i=0;i<9;i++){
+  const pt=pts[lo+Math.round(i*(hi-lo)/8)], ax=+pt.x.toFixed(1), ay=+pt.y.toFixed(1);
+  const len=92+((i*37)%5)*26;
+  let beads='';
+  for(let b=0;b<Math.round(len/19);b++) beads+=`<circle cx="${ax}" cy="${(ay+24+b*19).toFixed(1)}" r="9.5" fill="${b%2?'#f0a43a':'#e8862c'}"/>`;
+  kf('str'+i, (()=>{ const st=[]; const per=3.4+((i%3)*0.5);
+     for(let t=0;t<=22.3;t+=per/4){ const tt=Math.min(t,22);
+       st.push([tt,'transform:rotate('+(Math.sin(2*Math.PI*((t+i*0.4)/per))*4.5).toFixed(2)+'deg)','ease-in-out']);
+       if(tt>=22) break; } return st; })());
+  strings+=`<g class="an an-str${i}" style="transform-box:view-box;transform-origin:${ax}px ${ay}px">${beads}</g>`;
+ }
+}
+document.getElementById('scene4bg').innerHTML = `
+  <g class="an an-archwrap" id="archwrap">
+    <path id="archpath" class="an an-arch" d="${ARCH}" fill="none"
+          stroke="url(#goldstroke)" stroke-width="13" stroke-linecap="round"/>
+    <path d="${ARCH}" fill="none" stroke="#ffe6ae" stroke-width="3" opacity=".45"
+          class="an an-arch2"/>
+    <g class="an an-strwrap">${strings}</g>
+  </g>`;
+/* measure the real path length so the draw-on is exact */
+const L=Math.ceil(document.getElementById('archpath').getTotalLength());
+document.querySelectorAll('#archwrap path').forEach(p=>{
+  p.style.strokeDasharray=L; p.style.strokeDashoffset=L;
+});
+kf('arch',[
+  [0,'stroke-dashoffset:'+L+'px','linear'],
+  [15.15,'stroke-dashoffset:'+L+'px','cubic-bezier(.3,.05,.2,1)'],
+  [17.45,'stroke-dashoffset:0px','linear'],
+  [22,'stroke-dashoffset:0px']
+]);
+kf('arch2',[
+  [0,'stroke-dashoffset:'+L+'px','linear'],
+  [15.35,'stroke-dashoffset:'+L+'px','cubic-bezier(.3,.05,.2,1)'],
+  [17.7,'stroke-dashoffset:0px','linear'],
+  [22,'stroke-dashoffset:0px']
+]);
+kf('archwrap',[[0,'opacity:0','linear'],[14.9,'opacity:0','ease-in-out'],[15.5,'opacity:1','linear'],[22,'opacity:1']]);
+kf('strwrap',[[0,'opacity:0','linear'],[17.2,'opacity:0','ease-in-out'],[18.4,'opacity:1','linear'],[22,'opacity:1']]);
+
+/* ---- text: rises slowly from below, then stays ---- */
+function riseKF(name,t0){
+  return kf(name,[
+    [0,'opacity:0;transform:translateY(78px)','linear'],
+    [t0,'opacity:0;transform:translateY(78px)','cubic-bezier(.22,.7,.25,1)'],
+    [t0+0.95,'opacity:1;transform:translateY(0px)','linear'],
+    [22,'opacity:1;transform:translateY(0px)']
+  ]);
+}
+riseKF('t-names',15.25);   /* holds 3s  */
+riseKF('t-date', 18.25);   /* holds 2s  */
+riseKF('t-std',  20.25);   /* holds 2s  */
+
+/* ---- the gold light curtains at 5 / 10 / 15 ---- */
+(function(){
+  const s=[[0,'opacity:0;transform:translateY(-2700px)','linear']];
+  [T1,T2,T3].forEach(t=>{
+    s.push([t-0.62,'opacity:0;transform:translateY(-2700px)','cubic-bezier(.4,0,.25,1)']);
+    s.push([t-0.30,'opacity:1;transform:translateY(-1500px)','linear']);
+    s.push([t,     'opacity:1;transform:translateY(-640px)','linear']);
+    s.push([t+0.34,'opacity:1;transform:translateY(300px)','cubic-bezier(.4,0,.25,1)']);
+    s.push([t+0.66,'opacity:0;transform:translateY(1500px)','linear']);
+    s.push([t+0.67,'opacity:0;transform:translateY(-2700px)','linear']);
+  });
+  s.push([22,'opacity:0;transform:translateY(-2700px)','linear']);
+  kf('wipe',s);
+})();
+
+/* soft bokeh lanterns drifting behind everything */
+let bk='';
+for(let i=0;i<16;i++){
+  const x=40+rnd()*1000, y=140+rnd()*760, r=14+rnd()*40, o=(0.05+rnd()*0.09).toFixed(3);
+  const per=6+rnd()*5, amp=14+rnd()*26;
+  kf('bk'+i,(()=>{const s=[];for(let t=0;t<=22.3;t+=per/4){const tt=Math.min(t,22);
+    s.push([tt,'transform:translateY('+(Math.sin(2*Math.PI*((t+i)/per))*amp).toFixed(1)+'px)','ease-in-out']);
+    if(tt>=22)break;}return s;})());
+  bk+=`<circle class="an an-bk${i}" cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${r.toFixed(0)}" fill="#ffd9a0" opacity="${o}"/>`;
+}
+document.getElementById('bokeh').innerHTML=bk;
+
+/* ===================== wire names → elements ===================== */
+const MAP={
+  'an-pos-prem':'pos-prem','an-pos-vasu':'pos-vasu',
+  'an-pm-body':'pm-body','an-pm-turn':'pm-turn','an-pm-face':'pm-face','an-pm-bturn':'pm-bturn','an-pm-torso':'pm-torso','an-pm-head':'pm-head',
+  'an-pm-legl':'pm-legl','an-pm-shinl':'pm-shinl','an-pm-legr':'pm-legr','an-pm-shinr':'pm-shinr',
+  'an-pm-arml':'pm-arml','an-pm-forel':'pm-forel','an-pm-armr':'pm-armr','an-pm-forer':'pm-forer',
+  'an-pm-brows':'pm-brows','an-pm-eyes':'blink-p','an-pm-plait':'plait','an-pm-dupatta':'veil',
+  'an-vs-body':'vs-body','an-vs-turn':'vs-turn','an-vs-face':'vs-face','an-vs-bturn':'vs-bturn','an-pm-shell':'none-a','an-vs-shell':'none-a','an-vs-torso':'vs-torso','an-vs-head':'vs-head',
+  'an-vs-legl':'vs-legl','an-vs-shinl':'vs-shinl','an-vs-legr':'vs-legr','an-vs-shinr':'vs-shinr',
+  'an-vs-arml':'vs-arml','an-vs-forel':'vs-forel','an-vs-armr':'vs-armr','an-vs-forer':'vs-forer',
+  'an-vs-brows':'vs-brows','an-vs-eyes':'blink-v','an-vs-plait':'plait','an-vs-dupatta':'veil',
+  'an-seat':'seat','an-phone':'phone','an-bubble':'bubble','an-dot1':'dot1','an-dot2':'dot2','an-dot3':'dot3',
+  'an-heart':'heart','an-ringhold':'ringhold','an-glint':'glint','an-wipe':'wipe',
+  'an-arch':'arch','an-arch2':'arch2','an-archwrap':'archwrap','an-strwrap':'strwrap'
+};
+FAM.forEach(f=>{
+  MAP['an-'+f.id+'-turn']='turn-none';
+  MAP['an-'+f.id+'-bturn']='turn-none';
+  MAP['an-'+f.id+'-face']='face-none';
+  MAP['an-'+f.id+'-shell']=f.id+'-shell';
+  MAP['an-'+f.id+'-head']=f.id+'-head';
+  MAP['an-'+f.id+'-torso']='sway-a';
+  MAP['an-'+f.id+'-eyes']='blink-p';
+});
+['arml','armr','forel','forer'].forEach(k=>{ MAP['an-f2-'+k]='f2-'+k; });
+for(let i=0;i<78;i++) MAP['an-cf'+i]='cf'+i;
+for(let i=0;i<44;i++) MAP['an-pt'+i]='pt'+i;
+for(let i=0;i<9;i++)  MAP['an-str'+i]='str'+i;
+for(let i=0;i<16;i++) MAP['an-bk'+i]='bk'+i;
+MAP['an-t-names']='t-names'; MAP['an-t-date']='t-date'; MAP['an-t-std']='t-std';
+
+/* torso sway for the leads sits on the body group of the simple cast and on
+   dedicated wrappers for the leads, so it never fights a pose keyframe */
+Object.keys(MAP).forEach(cls=>{ CSS+='.'+cls+'{animation-name:'+MAP[cls]+'}'; });
+/* the celebrating uncle gets a hop layered on his position group */
+MAP['an-f2-body']='f2-bodyhop';
+/* ids used directly by the wipe + text */
+document.getElementById('wipe').classList.add('an-wipe');
+document.getElementById('t-names').classList.add('an-t-names');
+document.getElementById('t-date').classList.add('an-t-date');
+document.getElementById('t-std').classList.add('an-t-std');
+
+const st=document.createElement('style'); st.textContent=CSS; document.head.appendChild(st);
+
+/* ===================== backdrop palette ===================== */
+if(LIGHT){
+  const set=(id,stops)=>{const g=document.getElementById(id);
+    [...g.children].forEach((c,i)=>{ if(stops[i]) c.setAttribute('stop-color',stops[i]); });};
+  set('sky',  ['#f8f1e6','#f4e8d6','#efdcc0','#e9d2ab']);
+  const gg=document.getElementById('glow');
+  gg.children[0].setAttribute('stop-opacity','.30');
+  const fl=document.getElementById('floor');
+  [...fl.children].forEach((c,i)=>c.setAttribute('stop-color',['#e6d0ad','#d9bc90','#c5a071'][i]));
+  document.querySelectorAll('#bokeh circle').forEach(c=>{
+    c.setAttribute('fill','#d8a86a'); c.setAttribute('opacity', (parseFloat(c.getAttribute('opacity'))*1.5).toFixed(3)); });
+  document.getElementById('vig').style.background=
+    'radial-gradient(118% 76% at 50% 48%, rgba(0,0,0,0) 44%, rgba(120,70,30,.10) 76%, rgba(90,50,20,.20) 100%)';
+  document.getElementById('grain').style.opacity='.045';
+  document.querySelectorAll('#archwrap path').forEach(p=>{ if(p.getAttribute('stroke')==='#ffe6ae') p.setAttribute('stroke','#c98f2a'); });
+  document.getElementById('t-names').style.color='#6e2230';
+  document.getElementById('t-date').style.color='#b07a22';
+  document.getElementById('t-std').style.color='#8a5a3c';
+  const gl=document.querySelector('#root > ellipse');
+  gl.setAttribute('fill','#ffd9a0'); gl.setAttribute('opacity','.34');
+  document.querySelectorAll('#root > rect + ellipse ~ ellipse').forEach(e=>{
+    const o=parseFloat(e.getAttribute('opacity')||1); e.setAttribute('opacity',(o*0.5).toFixed(3)); });
+}
+
+/* ===================== film grain ===================== */
+const GT=14,GS=200,gurl=[];
+for(let i=0;i<GT;i++){
+  const c=document.createElement('canvas'); c.width=c.height=GS;
+  const x=c.getContext('2d'), im=x.createImageData(GS,GS), r=mulberry32(99173+i*7919);
+  for(let p=0;p<im.data.length;p+=4){ const v=118+(r()-0.5)*140;
+    im.data[p]=im.data[p+1]=im.data[p+2]=v; im.data[p+3]=255; }
+  x.putImageData(im,0,0); gurl.push(c.toDataURL('image/png'));
+}
+const grainEl=document.getElementById('grain');
+
+/* ===================== the frame driver ===================== */
+function setFrame(f){
+  f=Math.max(0,Math.min(TOTAL-1,f));
+  document.documentElement.style.setProperty('--t', (-f/FPS)+'s');
+  const g=mulberry32(f*40503+17);
+  grainEl.style.backgroundImage='url('+gurl[f%GT]+')';
+  grainEl.style.backgroundPosition=((g()*GS)|0)+'px '+((g()*GS)|0)+'px';
+  document.documentElement.dataset.frame=String(f);
+}
+window.setFrame=setFrame; window.TOTAL_FRAMES=TOTAL; window.__ready=true;
+setFrame(0);
+</script>
+</body>
+</html>

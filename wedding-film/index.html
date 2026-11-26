@@ -37,21 +37,21 @@
   .char       { overflow:visible; }
   .shell      { transform-box:view-box; transform-origin:0px 0px; }
   .body       { transform-box:view-box; transform-origin:0px 0px; }
-  .torso      { transform-box:view-box; transform-origin:0px -110px; }
-  .head       { transform-box:view-box; transform-origin:0px -200px; }
-  .leg-l      { transform-box:view-box; transform-origin:-18px -110px; }
-  .leg-r      { transform-box:view-box; transform-origin:18px -110px; }
-  .shin-l     { transform-box:view-box; transform-origin:-18px -56px; }
-  .shin-r     { transform-box:view-box; transform-origin:18px -56px; }
-  .arm-l      { transform-box:view-box; transform-origin:-36px -186px; }
-  .arm-r      { transform-box:view-box; transform-origin:36px -186px; }
-  .fore-l     { transform-box:view-box; transform-origin:-36px -142px; }
-  .fore-r     { transform-box:view-box; transform-origin:36px -142px; }
-  .eyes       { transform-box:view-box; transform-origin:0px -273px; }
-  .brows      { transform-box:view-box; transform-origin:0px -292px; }
-  .plait      { transform-box:view-box; transform-origin:46px -286px; }
-  .dupatta    { transform-box:view-box; transform-origin:-36px -196px; }
-  .skirt      { transform-box:view-box; transform-origin:0px -138px; }
+  .torso      { transform-box:view-box; transform-origin:0px -148px; }
+  .head       { transform-box:view-box; transform-origin:0px -250px; }
+  .leg-l      { transform-box:view-box; transform-origin:-16px -148px; }
+  .leg-r      { transform-box:view-box; transform-origin:16px -148px; }
+  .shin-l     { transform-box:view-box; transform-origin:-16px -74px; }
+  .shin-r     { transform-box:view-box; transform-origin:16px -74px; }
+  .arm-l      { transform-box:view-box; transform-origin:-30px -238px; }
+  .arm-r      { transform-box:view-box; transform-origin:30px -238px; }
+  .fore-l     { transform-box:view-box; transform-origin:-30px -190px; }
+  .fore-r     { transform-box:view-box; transform-origin:30px -190px; }
+  .eyes       { transform-box:view-box; transform-origin:0px -296px; }
+  .brows      { transform-box:view-box; transform-origin:0px -308px; }
+  .plait      { transform-box:view-box; transform-origin:-30px -270px; }
+  .dupatta    { transform-box:view-box; transform-origin:-30px -240px; }
+  .skirt      { transform-box:view-box; transform-origin:0px -150px; }
 
   /* position groups live in the ROOT viewBox, so their origins are
      stage coordinates — the character's ground point, so scaling
@@ -184,220 +184,192 @@ function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a
   t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
 
 /* ===================== character factory =====================
-   Built from rounded, tapered shapes rather than capsules, with the
-   head at roughly a third of total height so the silhouette reads as
-   cute rather than as a wooden toy.                                   */
+   Line art: flat fills, every form carried by a warm dark outline,
+   proportions around five heads tall.                                */
+const INK='#5d3a32', LW=2.6;
+const K=(f)=>`fill="${f}" stroke="${INK}" stroke-width="${LW}" stroke-linejoin="round" stroke-linecap="round"`;
+/* a small embroidery motif — reads as gold work at film size */
+function motif(x,y,c,sc){ sc=sc||1; return `<g transform="translate(${x},${y}) scale(${sc})">
+  <path d="M 0,-4 C 2.6,-4 2.6,0 0,0 C -2.6,0 -2.6,-4 0,-4 Z" fill="${c}"/>
+  <path d="M -4,0 C -4,2.6 0,2.6 0,0 C 0,-2.6 -4,-2.6 -4,0 Z" fill="${c}"/>
+  <path d="M 4,0 C 4,2.6 0,2.6 0,0 C 0,-2.6 4,-2.6 4,0 Z" fill="${c}"/>
+  <path d="M 0,4 C 2.6,4 2.6,0 0,0 C -2.6,0 -2.6,4 0,4 Z" fill="${c}"/></g>`; }
+
 function face(id,o){
   return `
-    <ellipse cx="-40" cy="-252" rx="13" ry="7.5" fill="${o.blush}" opacity=".42"/>
-    <ellipse cx="40"  cy="-252" rx="13" ry="7.5" fill="${o.blush}" opacity=".42"/>
+    <ellipse cx="-24" cy="-285" rx="8" ry="5" fill="${o.blush}" opacity=".6"/>
+    <ellipse cx="24"  cy="-285" rx="8" ry="5" fill="${o.blush}" opacity=".6"/>
     <g class="brows an an-${id}-brows">
-      <path d="M -33,-294 Q -23,-302 -13,-296" stroke="${o.brow}" stroke-width="3.6" fill="none" stroke-linecap="round" opacity=".85"/>
-      <path d="M 13,-296  Q 23,-302 33,-294"  stroke="${o.brow}" stroke-width="3.6" fill="none" stroke-linecap="round" opacity=".85"/>
+      <path d="M -20,-307 Q -13,-312 -7,-308" stroke="${INK}" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+      <path d="M 7,-308   Q 13,-312 20,-307"  stroke="${INK}" stroke-width="2.4" fill="none" stroke-linecap="round"/>
     </g>
     <g class="eyes an an-${id}-eyes">
-      <ellipse cx="-25" cy="-272" rx="8.4" ry="10" fill="#3a2226"/>
-      <ellipse cx="25"  cy="-272" rx="8.4" ry="10" fill="#3a2226"/>
-      <circle cx="-27.5" cy="-276" r="2.9" fill="#fff" opacity=".88"/>
-      <circle cx="22.5"  cy="-276" r="2.9" fill="#fff" opacity=".88"/>
+      <ellipse cx="-13" cy="-296" rx="4.2" ry="5" fill="${INK}"/>
+      <ellipse cx="13"  cy="-296" rx="4.2" ry="5" fill="${INK}"/>
     </g>
-    <path d="M -17,-250 Q 0,-233 17,-250" stroke="#3a2226" stroke-width="4.6" fill="none" stroke-linecap="round"/>`;
+    <path d="M -1,-291 Q 2,-286 -1,-284" stroke="${INK}" stroke-width="1.9" fill="none" stroke-linecap="round" opacity=".75"/>
+    <path d="M -7,-277 Q 0,-271 7,-277" stroke="${INK}" stroke-width="2.3" fill="none" stroke-linecap="round"/>`;
 }
-/* one arm: tapered upper + forearm + mitten hand, props ride in the hand */
 function arm(id,side,o){
-  const sx = side==='l' ? -36 : 36;
+  const sx = side==='l' ? -30 : 30;
   return `<g class="arm arm-${side} an an-${id}-arm${side}">
-    <path d="M ${sx-12.5},-200 Q ${sx},-207 ${sx+12.5},-200 L ${sx+10.5},-138 Q ${sx},-132 ${sx-10.5},-138 Z"
-          fill="${o.sleeve}" stroke="${o.sleeveDk}" stroke-width="1.8" stroke-linejoin="round"/>
+    <path d="M ${sx-9},-241 Q ${sx},-246 ${sx+9},-241 L ${sx+8},-186 Q ${sx},-182 ${sx-8},-186 Z" ${K(o.sleeve)}/>
     <g class="fore fore-${side} an an-${id}-fore${side}">
-      <path d="M ${sx-10.5},-148 Q ${sx},-153 ${sx+10.5},-148 L ${sx+9.5},-100 Q ${sx},-94 ${sx-9.5},-100 Z"
-            fill="${o.sleeve}" stroke="${o.sleeveDk}" stroke-width="1.8" stroke-linejoin="round"/>
-      <path d="M ${sx-10.5},-103 Q ${sx},-98 ${sx+10.5},-103" stroke="${o.trim}" stroke-width="4.6" fill="none" stroke-linecap="round"/>
-      ${o.bangles ? `<path d="M ${sx-10.2},-110 Q ${sx},-105 ${sx+10.2},-110" stroke="${o.trim}" stroke-width="3.4" fill="none" stroke-linecap="round"/>
-        <path d="M ${sx-10},-117 Q ${sx},-112 ${sx+10},-117" stroke="${o.trim}" stroke-width="3" fill="none" stroke-linecap="round" opacity=".85"/>` : ''}
-      <ellipse cx="${sx}" cy="-89" rx="12.5" ry="13.5" fill="${o.skin}" stroke="${o.skinSh}" stroke-width="1.6"/>
+      <path d="M ${sx-8},-194 Q ${sx},-198 ${sx+8},-194 L ${sx+7},-146 Q ${sx},-142 ${sx-7},-146 Z" ${K(o.sleeve)}/>
+      ${o.bangles ? `<path d="M ${sx-7.4},-150 Q ${sx},-146 ${sx+7.4},-150" stroke="${o.trim}" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+        <path d="M ${sx-7.2},-156 Q ${sx},-152 ${sx+7.2},-156" stroke="${o.band}" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+        <path d="M ${sx-7},-161 Q ${sx},-157 ${sx+7},-161" stroke="${o.trim}" stroke-width="2.6" fill="none" stroke-linecap="round"/>` : ''}
+      <path d="M ${sx-7.5},-145 Q ${sx-9},-131 ${sx-4},-128 Q ${sx},-126 ${sx+4},-128
+               Q ${sx+9},-131 ${sx+7.5},-145 Z" ${K(o.skin)}/>
       ${o['prop'+side]||''}
     </g></g>`;
 }
-/* one leg: thigh + shin + a curled-toe mojari */
 function leg(id,side,o){
-  const hx = side==='l' ? -18 : 18, d = side==='l' ? -1 : 1;
+  const hx = side==='l' ? -16 : 16, d = side==='l' ? -1 : 1;
   return `<g class="leg leg-${side} an an-${id}-leg${side}">
-    <path d="M ${hx-15},-115 Q ${hx},-120 ${hx+15},-115 L ${hx+13},-52 Q ${hx},-47 ${hx-13},-52 Z"
-          fill="${o.trouser}"/>
+    <path d="M ${hx-11},-152 Q ${hx},-157 ${hx+11},-152 L ${hx+9},-70 Q ${hx},-66 ${hx-9},-70 Z" ${K(o.trouser)}/>
     <g class="shin shin-${side} an an-${id}-shin${side}">
-      <path d="M ${hx-13},-62 Q ${hx},-67 ${hx+13},-62 L ${hx+11},-9 Q ${hx},-4 ${hx-11},-9 Z"
-            fill="${o.trouser}"/>
-      <path d="M ${hx-13},-12 Q ${hx},-7 ${hx+13},-12" stroke="${o.trim}" stroke-width="3.4" fill="none" opacity=".7"/>
-      <path d="M ${hx-11*d},-2 Q ${hx-12*d},-15 ${hx-1*d},-15 L ${hx+6*d},-16 Q ${hx+19*d},-14 ${hx+20*d},-2
-               Q ${hx+18*d},3 ${hx+7*d},3 L ${hx-5*d},3 Q ${hx-11*d},3 ${hx-11*d},-2 Z" fill="${o.shoe}"/>
-      <path d="M ${hx+17*d},-7 Q ${hx+25*d},-12 ${hx+21*d},-2" fill="none" stroke="${o.shoeDk}" stroke-width="3.2" stroke-linecap="round"/>
+      <path d="M ${hx-9},-79 Q ${hx},-83 ${hx+9},-79 L ${hx+8},-14 Q ${hx},-10 ${hx-8},-14 Z" ${K(o.trouser)}/>
+      <path d="M ${hx-8},-30 Q ${hx},-26 ${hx+8},-30 M ${hx-8},-22 Q ${hx},-18 ${hx+8},-22"
+            stroke="${INK}" stroke-width="1.7" fill="none" opacity=".5"/>
+      <path d="M ${hx-8},-13 L ${hx+8},-13 Q ${hx+10*d},-13 ${hx+13*d},-9
+               Q ${hx+19*d},-4 ${hx+19*d},-1 Q ${hx+19*d},3 ${hx+13*d},3
+               L ${hx-7*d},3 Q ${hx-9*d},3 ${hx-9*d},-1 Z" ${K(o.shoe)}/>
     </g></g>`;
 }
 function makeChar(id,o){
-  /* ---- Prem: cream sherwani, maroon safa with a kalgi ---- */
   const sherwani = `
-    <path d="M -37,-193 Q -32,-205 0,-207 Q 32,-205 37,-193 L 51,-80 Q 0,-69 -51,-80 Z" fill="${o.garment}"/>
-    <path d="M 0,-207 Q 32,-205 37,-193 L 51,-80 Q 26,-74 0,-71 Z" fill="${o.garmentDk}" opacity=".16"/>
-    <path d="M 0,-196 L 0,-74" stroke="${o.trim}" stroke-width="3.4" opacity=".9"/>
-    <circle cx="0" cy="-172" r="3.6" fill="${o.trim}"/><circle cx="0" cy="-148" r="3.6" fill="${o.trim}"/>
-    <circle cx="0" cy="-124" r="3.6" fill="${o.trim}"/><circle cx="0" cy="-100" r="3.6" fill="${o.trim}"/>
-    <path d="M -51,-80 Q 0,-69 51,-80 L 50,-94 Q 0,-83 -50,-94 Z" fill="${o.trim}" opacity=".95"/>`;
+    <path d="M -30,-243 Q -24,-252 0,-254 Q 24,-252 30,-243 L 36,-108 Q 0,-101 -36,-108 Z" ${K(o.garment)}/>
+    <path d="M 0,-250 L 0,-104" stroke="${INK}" stroke-width="2" opacity=".55"/>
+    ${[-222,-200,-178,-156,-134].map(y=>`<circle cx="0" cy="${y}" r="2.8" fill="${o.trim}" stroke="${INK}" stroke-width="1.2"/>`).join('')}
+    ${motif(-19,-206,o.trim,.9)}${motif(-23,-166,o.trim,.9)}${motif(-18,-128,o.trim,.9)}
+    ${motif(20,-194,o.trim,.9)}${motif(24,-152,o.trim,.9)}
+    <path d="M -36,-108 Q 0,-101 36,-108" stroke="${o.trim}" stroke-width="3.4" fill="none"/>`;
   const safa = `
-    <defs><clipPath id="tc-${id}"><path d="M -64,-296 C -69,-340 -42,-362 0,-362 C 42,-362 69,-340 64,-296 C 36,-312 -36,-312 -64,-296 Z"/></clipPath></defs>
-    <path d="M -64,-296 C -69,-340 -42,-362 0,-362 C 42,-362 69,-340 64,-296
-             C 36,-312 -36,-312 -64,-296 Z" fill="${o.hat}"/>
-    <g clip-path="url(#tc-${id})">
-      <path d="M -70,-292 C -40,-308 30,-326 74,-322 L 74,-310 C 30,-314 -38,-298 -70,-282 Z" fill="${o.hatDk}" opacity=".8"/>
-      <path d="M -74,-312 C -44,-334 20,-352 70,-348" stroke="${o.hatDk}" stroke-width="7" fill="none" opacity=".55"/>
-      <path d="M -70,-332 C -44,-350 4,-368 48,-368" stroke="${o.hatDk}" stroke-width="6" fill="none" opacity=".42"/>
-      <path d="M 30,-364 C 54,-352 64,-334 66,-314" stroke="${o.hatDk}" stroke-width="4.5" fill="none" opacity=".3"/>
-    </g>
-    <path d="M 57,-304 C 71,-296 75,-280 70,-264 C 69,-278 61,-291 51,-298 Z" fill="${o.hatDk}"/>
-    <path d="M -24,-354 C -31,-372 -27,-388 -17,-397 C -21,-381 -21,-368 -18,-357 Z" fill="${o.trim}"/>
-    <path d="M -24,-354 C -34,-368 -34,-380 -28,-389 C -29,-376 -27,-365 -21,-356 Z" fill="${o.trim}" opacity=".75"/>
-    <circle cx="-23" cy="-345" r="9.5" fill="${o.trim}"/>
-    <circle cx="-23" cy="-345" r="4" fill="#8c1f2e"/>`;
+    <path d="M -42,-310 C -45,-346 -26,-364 0,-364 C 26,-364 45,-346 42,-310
+             C 22,-322 -22,-322 -42,-310 Z" ${K(o.hat)}/>
+    <path d="M -43,-314 C -22,-326 22,-326 43,-314" stroke="${INK}" stroke-width="2" fill="none" opacity=".6"/>
+    <path d="M -41,-327 C -22,-340 14,-350 37,-344" stroke="${INK}" stroke-width="2" fill="none" opacity=".5"/>
+    <path d="M 39,-324 C 51,-314 53,-296 47,-280 C 47,-294 42,-308 33,-316 Z" ${K(o.hatDk)}/>
+    <path d="M -2,-360 C -12,-376 -9,-392 2,-400 C -2,-386 -2,-372 2,-360 Z" fill="${o.trim}" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/>
+    <circle cx="0" cy="-352" r="7.5" fill="${o.trim}" stroke="${INK}" stroke-width="1.8"/>
+    <circle cx="0" cy="-352" r="2.8" fill="#8c1f2e"/>`;
+  const stole = `
+    <path d="M -28,-248 Q -14,-254 -4,-250 L 26,-104 Q 12,-99 2,-100 Z" ${K(o.stole)}/>
+    <path d="M -4,-250 L 26,-104" stroke="${o.trim}" stroke-width="2.4" fill="none" opacity=".9"/>`;
 
-  /* ---- Vasudha: red-and-gold lehenga, dupatta, long plait ---- */
   const choli = `
-    <path d="M -35,-193 Q -30,-205 0,-207 Q 30,-205 35,-193 L 41,-150 Q 0,-142 -41,-150 Z" fill="${o.garment}"/>
-    <path d="M 0,-207 Q 30,-205 35,-193 L 41,-150 Q 20,-146 0,-144 Z" fill="${o.garmentDk}" opacity=".16"/>
-    <path d="M -41,-152 Q 0,-145 41,-152" stroke="${o.trim}" stroke-width="4.2" fill="none" stroke-linecap="round"/>
-    <path d="M -34,-153 Q 0,-146 34,-153 L 33,-131 Q 0,-124 -33,-131 Z" fill="${o.skin}"/>`;
+    <path d="M -28,-243 Q -22,-252 0,-254 Q 22,-252 28,-243 L 30,-196 Q 0,-190 -30,-196 Z" ${K(o.garment)}/>
+    <path d="M -30,-198 Q 0,-192 30,-198" stroke="${o.trim}" stroke-width="3" fill="none"/>
+    <path d="M -24,-199 Q 0,-193 24,-199 L 23,-176 Q 0,-170 -23,-176 Z" ${K(o.skin)}/>`;
   const lehenga = `
     <g class="skirt an an-${id}-skirt">
-      <path d="M -35,-136 Q 0,-143 35,-136 L 88,-6 Q 0,11 -88,-6 Z" fill="${o.garment}"/>
-      <path d="M 0,-139 Q 20,-140 35,-136 L 88,-6 Q 44,3 0,11 Z" fill="${o.garmentDk}" opacity=".15"/>
-      <path d="M -35,-136 Q 0,-143 35,-136 L 47,-106 Q 0,-97 -47,-106 Z" fill="${o.garmentDk}" opacity=".35"/>
-      <path d="M -62,-66 Q 0,-55 62,-66" stroke="${o.trim}" stroke-width="3.4" fill="none" opacity=".8"/>
-      <path d="M -88,-6 Q 0,11 88,-6 L 85,-23 Q 0,-6 -85,-23 Z" fill="${o.trim}"/>
-      <circle cx="-38" cy="-40" r="3.6" fill="${o.trim}" opacity=".9"/>
-      <circle cx="0"   cy="-33" r="3.6" fill="${o.trim}" opacity=".9"/>
-      <circle cx="38"  cy="-40" r="3.6" fill="${o.trim}" opacity=".9"/>
-      <circle cx="-20" cy="-84" r="3.2" fill="${o.trim}" opacity=".8"/>
-      <circle cx="20"  cy="-84" r="3.2" fill="${o.trim}" opacity=".8"/>
+      <path d="M -26,-180 Q 0,-186 26,-180 L 82,-2 Q 0,15 -82,-2 Z" ${K(o.garment)}/>
+      <path d="M -56,-86 Q 0,-76 56,-86" stroke="${o.trim}" stroke-width="3" fill="none" opacity=".9"/>
+      <path d="M -82,-2 Q 0,15 82,-2 L 79,-26 Q 0,-9 -79,-26 Z" fill="${o.trim}" stroke="${INK}" stroke-width="2.2"/>
+      ${motif(-34,-52,o.trim)}${motif(0,-44,o.trim)}${motif(34,-52,o.trim)}
+      ${motif(-18,-110,o.trim,.85)}${motif(18,-110,o.trim,.85)}
     </g>`;
-  const hairBack = `
-    <path d="M -72,-258 C -78,-322 -44,-356 0,-356 C 44,-356 78,-322 72,-258
-             C 72,-224 64,-206 56,-196 L -56,-196 C -64,-206 -72,-224 -72,-258 Z" fill="${o.hair}"/>
-    <path d="M 40,-300 C 62,-280 68,-242 62,-206 L 56,-196 C 66,-232 62,-274 40,-300 Z" fill="#000" opacity=".22"/>`;
+  /* the dupatta is worn over her head, framing the face, and falls both sides */
+  const veilHead = `
+    <path d="M -51,-206 L -51,-292 A 51,51 0 0 1 51,-292 L 51,-206 L 39,-206 L 39,-292
+             A 39,39 0 0 0 -39,-292 L -39,-206 Z" ${K(o.veil)}/>
+    <path d="M -39,-206 L -39,-292 A 39,39 0 0 1 39,-292 L 39,-206"
+          stroke="${o.trim}" stroke-width="3.2" fill="none"/>
+    <circle cx="-34" cy="-278" r="3.4" fill="${o.trim}" stroke="${INK}" stroke-width="1.2"/>
+    <path d="M -37.5,-275 L -30.5,-275 L -34,-268 Z" fill="${o.trim}" stroke="${INK}" stroke-width="1.1"/>
+    <circle cx="34" cy="-278" r="3.4" fill="${o.trim}" stroke="${INK}" stroke-width="1.2"/>
+    <path d="M 30.5,-275 L 37.5,-275 L 34,-268 Z" fill="${o.trim}" stroke="${INK}" stroke-width="1.1"/>`;
   const hairFront = `
-    <path d="M -65,-264 C -70,-324 -41,-353 0,-353 C 41,-353 70,-324 65,-264
-             C 58,-292 40,-307 0,-307 C -40,-307 -58,-292 -65,-264 Z" fill="${o.hair}"/>
-    <path d="M -46,-324 C -34,-342 -12,-350 6,-349 C -10,-342 -28,-330 -38,-312 Z" fill="#6a4a44" opacity=".35"/>
-    <path d="M 0,-353 L 0,-309" stroke="${o.hairDk}" stroke-width="3.2" opacity=".85"/>
-    <path d="M 0,-306 L 0,-294" stroke="${o.trim}" stroke-width="3.2"/>
-    <circle cx="0" cy="-289" r="6.4" fill="${o.trim}"/>
-    <circle cx="0" cy="-289" r="2.6" fill="#8c1f2e"/>
-    <circle cx="-57" cy="-244" r="5" fill="${o.trim}"/>
-    <path d="M -63,-239 L -51,-239 L -57,-227 Z" fill="${o.trim}"/>
-    <circle cx="57"  cy="-244" r="5" fill="${o.trim}"/>
-    <path d="M 51,-239 L 63,-239 L 57,-227 Z" fill="${o.trim}"/>`;
+    <path d="M -34,-300 C -36,-334 -20,-350 0,-350 C 20,-350 36,-334 34,-300
+             C 28,-318 16,-326 0,-326 C -16,-326 -28,-318 -34,-300 Z" ${K(o.hair)}/>
+    <path d="M 0,-350 L 0,-327" stroke="${INK}" stroke-width="1.8" opacity=".7"/>
+    <path d="M 0,-326 L 0,-316" stroke="${o.trim}" stroke-width="2.2"/>
+    <circle cx="0" cy="-313" r="3.6" fill="${o.trim}" stroke="${INK}" stroke-width="1.3"/>
+    <circle cx="0" cy="-306" r="2.4" fill="#b3243a"/>`;
   const plait = `
     <g class="plait an an-${id}-plait">
-      <path d="M 50,-290 C 78,-258 80,-206 70,-166 C 65,-144 60,-130 56,-120"
-            stroke="${o.hair}" stroke-width="27" fill="none" stroke-linecap="round"/>
-      <path d="M 70,-252 q 11,5 0,11 M 73,-224 q 11,5 0,11 M 71,-196 q 10,5 0,11
-               M 66,-168 q 10,5 0,11 M 61,-141 q 9,4 0,10"
-            stroke="${o.hairDk}" stroke-width="3.2" fill="none" stroke-linecap="round" opacity=".85"/>
-      <path d="M 56,-122 l -7,16 l 14,0 Z" fill="${o.trim}"/><circle cx="56" cy="-104" r="4" fill="${o.trim}"/>
+      <path d="M -30,-270 C -40,-244 -42,-212 -39,-186 C -37,-172 -35,-164 -34,-158"
+            stroke="${INK}" stroke-width="14" fill="none" stroke-linecap="round"/>
+      <path d="M -30,-270 C -40,-244 -42,-212 -39,-186 C -37,-172 -35,-164 -34,-158"
+            stroke="${o.hair}" stroke-width="10.4" fill="none" stroke-linecap="round"/>
+      <path d="M -40,-240 q -5,3 0,6 M -41,-218 q -5,3 0,6 M -40,-196 q -5,3 0,6" stroke="${INK}" stroke-width="1.8" fill="none" stroke-linecap="round" opacity=".6"/>
+      ${[-230,-206,-182].map((y,i)=>`<circle cx="${-40+i}" cy="${y}" r="2.8" fill="${o.trim}" stroke="${INK}" stroke-width="1.1"/>`).join('')}
+      <path d="M -34,-158 l -5,11 l 10,0 Z" fill="${o.trim}" stroke="${INK}" stroke-width="1.3"/>
     </g>`;
-  const dupatta = `
+  const veilTail = `
     <g class="dupatta an an-${id}-dupatta">
-      <path d="M -32,-200 Q -62,-174 -70,-118 Q -78,-56 -64,-2 L -42,-4 Q -54,-56 -48,-114 Q -43,-156 -20,-186 Z"
-            fill="${o.veil}" opacity=".40"/>
-      <path d="M -32,-200 Q -62,-174 -70,-118 Q -78,-56 -64,-2" stroke="${o.trim}" stroke-width="2.6" fill="none" opacity=".45"/>
+      <path d="M -50,-234 Q -70,-188 -74,-124 Q -77,-60 -70,-2 L -50,-4 Q -56,-62 -54,-124 Q -52,-186 -38,-228 Z"
+            ${K(o.veil)}/>
+      <path d="M -50,-234 Q -70,-188 -74,-124 Q -77,-60 -70,-2" stroke="${o.trim}" stroke-width="3" fill="none"/>
     </g>`;
-  const simpleHat = o.hatSimple||'';
   const simpleTop = `
-    <path d="M -35,-193 Q -30,-205 0,-207 Q 30,-205 35,-193 L 47,-84 Q 0,-74 -47,-84 Z" fill="${o.garment}"/>
-    <path d="M 0,-196 L 0,-78" stroke="${o.trim}" stroke-width="2.6" opacity=".5"/>
-    <path d="M -47,-84 Q 0,-74 47,-84 L 46,-95 Q 0,-85 -46,-95 Z" fill="${o.trim}" opacity=".6"/>`;
+    <path d="M -28,-243 Q -22,-252 0,-254 Q 22,-252 28,-243 L 34,-112 Q 0,-105 -34,-112 Z" ${K(o.garment)}/>
+    <path d="M 0,-250 L 0,-108" stroke="${INK}" stroke-width="1.8" opacity=".45"/>`;
 
   const torsoInner = o.kind==='lehenga' ? choli : (o.kind==='sherwani' ? sherwani : simpleTop);
-  const headwear   = o.kind==='lehenga' ? hairFront : (o.kind==='sherwani' ? safa : simpleHat);
-
   return `<svg id="${id}" class="char" overflow="visible"
-            x="${o.cx-o.w/2}" y="${o.baseY-0.9375*(o.w*384/260)}"
-            width="${o.w}" height="${o.w*384/260}" viewBox="-130 -360 260 384">
+            x="${o.cx-o.w/2}" y="${o.baseY-0.947368*(o.w*380/220)}"
+            width="${o.w}" height="${o.w*380/220}" viewBox="-110 -360 220 380">
     <g class="shell an an-${id}-shell">
-    <ellipse cx="0" cy="4" rx="62" ry="13" fill="#2a0f14" opacity=".32"/>
+    <ellipse cx="0" cy="7" rx="56" ry="11" fill="#2a0f14" opacity=".28"/>
     <g class="body an an-${id}-body">
-      ${o.kind==='lehenga' ? dupatta : ''}
       ${leg(id,'l',o)}
       ${leg(id,'r',o)}
       <g class="torso an an-${id}-torso">
         ${o.kind==='lehenga' ? lehenga : ''}
         ${torsoInner}
+        ${o.kind==='sherwani' ? stole : ''}
       </g>
       <g class="head an an-${id}-head">
-        ${o.kind==='lehenga' ? hairBack : ''}
-        <circle cx="0" cy="-268" r="62" fill="${o.skin}"/>
-        <path d="M 14,-327 A 62,62 0 0 1 14,-209 A 56,62 0 0 0 14,-327 Z" fill="${o.skinSh}" opacity=".14"/>
-        <circle cx="-60" cy="-258" r="8.5" fill="${o.skinSh}" opacity=".85"/>
-        <circle cx="60"  cy="-258" r="8.5" fill="${o.skinSh}" opacity=".85"/>
+        <path d="M -8,-260 Q 0,-256 8,-260 L 8,-246 Q 0,-240 -8,-246 Z" ${K(o.skin)}/>
+        <circle cx="0" cy="-292" r="38" ${K(o.skin)}/>
         ${face(id,o)}
-        ${headwear}
-        ${o.kind==='lehenga' ? plait : ''}
+        ${o.kind==='lehenga' ? hairFront : ''}
+        ${o.kind==='sherwani' ? safa : ''}
+        ${o.kind==='simple'   ? (o.hatSimple||'') : ''}
+        ${o.kind==='lehenga'  ? veilHead : ''}
       </g>
       ${arm(id,'l',o)}
       ${arm(id,'r',o)}
-      <circle cx="-36" cy="-187" r="13" fill="${o.sleeve}"/>
-      <circle cx="36"  cy="-187" r="13" fill="${o.sleeve}"/>
-      ${o.kind==='sherwani' ? `<path d="M -37,-193 Q -32,-205 0,-207 Q 32,-205 37,-193 L 36,-180 Q 0,-192 -36,-180 Z" fill="${o.garment}"/>` : ''}
-      ${o.kind==='lehenga'  ? `<path d="M -35,-193 Q -30,-205 0,-207 Q 30,-205 35,-193 L 34,-176 Q 20,-184 16,-190 Q 0,-178 -16,-190 Q -20,-184 -34,-176 Z" fill="${o.garment}"/>
-        <path d="M -19,-191 Q 0,-174 19,-191" stroke="${o.trim}" stroke-width="3.6" fill="none"/>
-        <circle cx="0" cy="-176" r="5" fill="${o.trim}"/>
-        <circle cx="-11" cy="-181" r="3" fill="${o.trim}"/>
-        <circle cx="11"  cy="-181" r="3" fill="${o.trim}"/>` : ''}
-      ${o.kind==='simple'   ? `<path d="M -35,-193 Q -30,-205 0,-207 Q 30,-205 35,-193 L 34,-180 Q 0,-192 -34,-180 Z" fill="${o.garment}"/>` : ''}
-      <path d="M -15,-207 Q 0,-201 15,-207 L 14,-189 Q 0,-182 -14,-189 Z" fill="${o.skinSh}"/>
-      ${o.kind==='sherwani' ? `<path d="M -36,-194 Q -22,-199 -12,-196 L 30,-78 Q 18,-72 6,-73 Z" fill="${o.stole}"/>
-        <path d="M -12,-196 L 30,-78" stroke="${o.trim}" stroke-width="3.4" fill="none" opacity=".9"/>
-        <path d="M -36,-194 L 6,-73" stroke="${o.trim}" stroke-width="2.6" fill="none" opacity=".6"/>
-        <circle cx="-5" cy="-166" r="3.2" fill="${o.trim}" opacity=".85"/>
-        <circle cx="6"  cy="-134" r="3.2" fill="${o.trim}" opacity=".85"/>
-        <circle cx="17" cy="-102" r="3.2" fill="${o.trim}" opacity=".85"/>
-        <path d="M -19,-199 Q 0,-191 19,-199 L 18,-184 Q 0,-177 -18,-184 Z" fill="${o.garmentDk}"/>
-        <path d="M -19,-199 Q 0,-191 19,-199" stroke="${o.trim}" stroke-width="2.6" fill="none" opacity=".8"/>` : ''}
+      ${o.kind==='lehenga' ? veilTail + plait : ''}
     </g></g></svg>`;
 }
 
 /* ===================== cast ===================== */
-const PHONE=(sx,rot)=>`<g class="an an-phone" style="transform-box:view-box;transform-origin:${sx}px -90px">
-     <rect x="${sx-17}" y="-118" width="34" height="54" rx="7" fill="#2b2733" transform="rotate(${rot} ${sx} -90)"/>
-     <rect x="${sx-12.5}" y="-113" width="25" height="43" rx="3.5" fill="#cfe4e8" transform="rotate(${rot} ${sx} -90)"/>
+const PHONE=(sx,rot)=>`<g class="an an-phone" style="transform-box:view-box;transform-origin:${sx}px -134px">
+     <rect x="${sx-13}" y="-158" width="26" height="42" rx="5" fill="#3a3340" stroke="${INK}" stroke-width="2" transform="rotate(${rot} ${sx} -134)"/>
+     <rect x="${sx-9}" y="-154" width="18" height="33" rx="2.5" fill="#d3e6ea" transform="rotate(${rot} ${sx} -134)"/>
    </g>`;
-const RING=`<g class="an an-ringhold" style="transform-box:view-box;transform-origin:40px -90px">
-     <g class="an an-glint" style="transform-box:view-box;transform-origin:40px -100px">
-       <path d="M 40,-150 L 46,-110 L 86,-104 L 46,-98 L 40,-58 L 34,-98 L -6,-104 L 34,-110 Z" fill="url(#sparkle)"/></g>
-     <circle cx="40" cy="-102" r="10" fill="none" stroke="#f0c75a" stroke-width="4.5"/>
-     <circle cx="40" cy="-115" r="6" fill="#fff6dd"/></g>`;
+const RING=`<g class="an an-ringhold" style="transform-box:view-box;transform-origin:30px -134px">
+     <g class="an an-glint" style="transform-box:view-box;transform-origin:30px -146px">
+       <path d="M 30,-192 L 35,-158 L 69,-152 L 35,-146 L 30,-112 L 25,-146 L -9,-152 L 25,-158 Z" fill="url(#sparkle)"/></g>
+     <circle cx="30" cy="-148" r="7.5" fill="none" stroke="#e0a81f" stroke-width="3.4"/>
+     <circle cx="30" cy="-158" r="4.6" fill="#fff6dd" stroke="${INK}" stroke-width="1.4"/></g>`;
 const PREM={ kind:'sherwani', skin:'#eab889', skinSh:'#c9915f', blush:'#e9897b', hair:'#2e1a16', hairDk:'#1d100d', brow:'#5a3a2e',
   garment:'#f3e4c8', garmentDk:'#d9c49f', sleeve:'#f3e4c8', sleeveDk:'#d2bc93', trim:'#cf9c33',
   trouser:'#ece0c6', trouserDk:'#cdbe9e', shoe:'#c9952f', shoeDk:'#9e7019', stole:'#9e2a3c', hat:'#8e2436', hatDk:'#6b1826', propr:PHONE(33,-18)+RING };
 const VASU={ kind:'lehenga', skin:'#edbb92', skinSh:'#cb9468', blush:'#e07f7f', hair:'#241310', hairDk:'#120807', brow:'#4a2a22',
   garment:'#c42a3c', garmentDk:'#9c1f2e', sleeve:'#c42a3c', sleeveDk:'#951d2b', trim:'#e8bc56',
-  trouser:'#b02433', trouserDk:'#8a1b27', shoe:'#d9a63c', shoeDk:'#ab7d20', veil:'#e0636f', bangles:true, propl:PHONE(-33,16) };
+  trouser:'#b02433', trouserDk:'#8a1b27', shoe:'#d9a63c', shoeDk:'#ab7d20', veil:'#d4374a', band:'#8c1f2e', bangles:true, propl:PHONE(-33,16) };
 
 /* the two leads are ONE instance each, carried through all four scenes */
 document.getElementById('leads').innerHTML =
-  `<g class="pos an an-pos-prem">${makeChar('pm',Object.assign({cx:540,baseY:1480,w:436},PREM))}</g>` +
-  `<g class="pos an an-pos-vasu">${makeChar('vs',Object.assign({cx:540,baseY:1480,w:436},VASU))}</g>`;
+  `<g class="pos an an-pos-prem">${makeChar('pm',Object.assign({cx:540,baseY:1480,w:404},PREM))}</g>` +
+  `<g class="pos an an-pos-vasu">${makeChar('vs',Object.assign({cx:540,baseY:1480,w:404},VASU))}</g>`;
 
 /* four muted family characters for scene 2 */
 const FAM=[
-  {id:'f1',cx:104,  w:264, c:'#6d5a72', t:'#8e7a93', hat:'#55465c'},
-  {id:'f2',cx:290,  w:284, c:'#7b6354', t:'#9a7f6c', hat:'#5f4a3e'},
-  {id:'f3',cx:792,  w:284, c:'#5d6b74', t:'#7d8c96', hat:'#49555d'},
-  {id:'f4',cx:978,  w:264, c:'#74626d', t:'#93808c', hat:'#5b4b55'}
+  {id:'f1',cx:104,  w:250, c:'#6d5a72', t:'#8e7a93', hat:'#55465c'},
+  {id:'f2',cx:290,  w:268, c:'#7b6354', t:'#9a7f6c', hat:'#5f4a3e'},
+  {id:'f3',cx:792,  w:268, c:'#5d6b74', t:'#7d8c96', hat:'#49555d'},
+  {id:'f4',cx:978,  w:250, c:'#74626d', t:'#93808c', hat:'#5b4b55'}
 ];
 document.getElementById('sc2bg').innerHTML = FAM.map(f=>makeChar(f.id,{
   kind:'simple', cx:f.cx, baseY:1500, w:f.w,
   skin:'#cda07e', skinSh:'#a87c5c', blush:'#cf8c7d', hair:'#3a2a28', hairDk:'#241917', brow:'#5e4038',
   garment:f.c, garmentDk:f.c, sleeve:f.c, sleeveDk:'rgba(0,0,0,.28)', trim:f.t, trouser:f.c, trouserDk:'rgba(0,0,0,.28)', shoe:'#4a3b43', shoeDk:'#2b2227',
-  hatSimple:`<path d="M -64,-294 C -68,-338 -42,-360 0,-360 C 42,-360 68,-338 64,-294 C 36,-310 -36,-310 -64,-294 Z" fill="${f.hat}"/><path d="M -64,-298 C -40,-313 40,-313 64,-298 L 63,-287 C 38,-302 -38,-302 -63,-287 Z" fill="${f.hat}" opacity=".55"/>`
+  hatSimple:`<path d="M -41,-316 C -44,-350 -26,-368 0,-368 C 26,-368 44,-350 41,-316 C 22,-328 -22,-328 -41,-316 Z" fill="${f.hat}" stroke="${INK}" stroke-width="2.4" stroke-linejoin="round"/><path d="M -43,-314 C -22,-326 22,-326 43,-314" stroke="${INK}" stroke-width="1.8" fill="none" opacity=".5"/>`
 })).join('');
 </script>
 
@@ -440,19 +412,19 @@ kf('pos-vasu',[
 kf('pm-body',[
   [0,   'translate(0px,0px)','ease-in-out'],
   [10.5,'translate(0px,0px)'],
-  [10.8,'translate(0px,-7px)'],                      /* anticipation: he rises before he drops */
-  [12.0,'translate(0px,52px)'],
-  [12.26,'translate(0px,57px)','ease-out'],          /* squash on the landing */
-  [12.62,'translate(0px,52px)'],
-  [15.0,'translate(0px,52px)'],
-  [15.8,'translate(0px,-5px)'],                      /* overshoot coming back up */
+  [10.8,'translate(0px,-8px)'],
+  [12.0,'translate(0px,68px)'],
+  [12.26,'translate(0px,74px)','ease-out'],
+  [12.62,'translate(0px,68px)'],
+  [15.0,'translate(0px,68px)'],
+  [15.8,'translate(0px,-6px)'],
   [16.3,'translate(0px,0px)'],
   [22,  'translate(0px,0px)']]);
 /* a real knee fold: hip swings back, shin folds under, front leg takes the weight */
-kf('pm-legl',[[0,'rotate(0deg)'],[10.5,'rotate(0deg)'],[10.8,'rotate(0deg)'],[12.0,'rotate(2deg)'],[15.0,'rotate(2deg)'],[15.9,'rotate(0deg)'],[22,'rotate(0deg)']]);
-kf('pm-shinl',[[0,'rotate(0deg)'],[10.5,'rotate(0deg)'],[10.8,'rotate(0deg)'],[12.0,'rotate(88deg)'],[15.0,'rotate(88deg)'],[15.9,'rotate(0deg)'],[22,'rotate(0deg)']]);
-kf('pm-legr',[[0,'rotate(0deg)'],[10.5,'rotate(0deg)'],[10.8,'rotate(0deg)'],[12.0,'rotate(-88deg)'],[15.0,'rotate(-88deg)'],[15.9,'rotate(0deg)'],[22,'rotate(0deg)']]);
-kf('pm-shinr',[[0,'rotate(0deg)'],[10.5,'rotate(0deg)'],[10.8,'rotate(0deg)'],[12.0,'rotate(88deg)'],[15.0,'rotate(88deg)'],[15.9,'rotate(0deg)'],[22,'rotate(0deg)']]);
+kf('pm-legl',[[0,'rotate(0deg)'],[10.5,'rotate(0deg)'],[10.8,'rotate(0deg)'],[12.0,'rotate(0deg)'],[15.0,'rotate(0deg)'],[15.9,'rotate(0deg)'],[22,'rotate(0deg)']]);
+kf('pm-shinl',[[0,'rotate(0deg)'],[10.5,'rotate(0deg)'],[10.8,'rotate(0deg)'],[12.0,'rotate(85deg)'],[15.0,'rotate(85deg)'],[15.9,'rotate(0deg)'],[22,'rotate(0deg)']]);
+kf('pm-legr',[[0,'rotate(0deg)'],[10.5,'rotate(0deg)'],[10.8,'rotate(0deg)'],[12.0,'rotate(-70deg)'],[15.0,'rotate(-70deg)'],[15.9,'rotate(0deg)'],[22,'rotate(0deg)']]);
+kf('pm-shinr',[[0,'rotate(0deg)'],[10.5,'rotate(0deg)'],[10.8,'rotate(0deg)'],[12.0,'rotate(100deg)'],[15.0,'rotate(100deg)'],[15.9,'rotate(0deg)'],[22,'rotate(0deg)']]);
 /* torso: leans over the phone, straightens in surprise, leans in to propose */
 kf('pm-torso',[
   [0,   'rotate(5deg)'],
@@ -480,40 +452,35 @@ kf('pm-head',[
 ]);
 /* right arm holds the phone, then offers the ring up to her */
 kf('pm-armr',[
-  [0,   'rotate(22deg)'],
-  [3.02,'rotate(22deg)','cubic-bezier(.3,0,.2,1)'],
-  [3.18,'rotate(27deg)'],                            /* anticipation: sinks before it lifts */
-  [3.85,'rotate(13deg)'],
-  [5.0, 'rotate(9deg)'],
-  [9.8, 'rotate(7deg)'],
-  [11.75,'rotate(14deg)'],                           /* small wind-up */
-  [12.75,'rotate(-70deg)'],                          /* ring raised toward her */
-  [15.0,'rotate(-66deg)'],
-  [16.1,'rotate(-7deg)'],                            /* becomes the held hand */
-  [22,  'rotate(-7deg)']]);
+  [0,   'rotate(-35deg)'],
+  [3.02,'rotate(-35deg)','cubic-bezier(.3,0,.2,1)'],
+  [3.18,'rotate(-31deg)'],
+  [3.85,'rotate(-44deg)'],
+  [5.0, 'rotate(-14deg)'],
+  [9.8, 'rotate(-8deg)'],
+  [11.75,'rotate(-2deg)'],
+  [12.75,'rotate(-30deg)'],
+  [15.0,'rotate(-28deg)'],
+  [16.1,'rotate(-6deg)'],
+  [22,  'rotate(-6deg)']]);
 kf('pm-forer',[
-  [0,   'rotate(96deg)'],
-  [3.02,'rotate(96deg)','cubic-bezier(.3,0,.2,1)'],
-  [3.18,'rotate(101deg)'],
-  [3.85,'rotate(78deg)'],
-  [5.0, 'rotate(28deg)'],
-  [9.8, 'rotate(10deg)'],
-  [12.75,'rotate(-60deg)'],
-  [15.0,'rotate(-57deg)'],
+  [0,   'rotate(101deg)'],
+  [3.02,'rotate(101deg)','cubic-bezier(.3,0,.2,1)'],
+  [3.18,'rotate(106deg)'],
+  [3.85,'rotate(84deg)'],
+  [5.0, 'rotate(24deg)'],
+  [9.8, 'rotate(8deg)'],
+  [12.75,'rotate(-80deg)'],
+  [15.0,'rotate(-77deg)'],
   [16.1,'rotate(2deg)'],
   [22,  'rotate(2deg)']]);
 /* left arm: relaxed, celebrates a touch in scene 2, steadies the knee in 3 */
 kf('pm-arml',[
-  [0,   'rotate(-8deg)'],
-  [5.2, 'rotate(-8deg)'],
-  [7.6, 'rotate(-4deg)'],                            /* anticipation before the lift */
-  [8.4, 'rotate(-30deg)'],
-  [9.4, 'rotate(-15deg)'],
-  [12.0,'rotate(11deg)'],
-  [16.1,'rotate(-7deg)'],
-  [22,  'rotate(-7deg)']]);
-kf('pm-forel',[[0,'rotate(6deg)'],[7.6,'rotate(8deg)'],[8.4,'rotate(-18deg)'],
-  [9.4,'rotate(0deg)'],[12.0,'rotate(5deg)'],[16.1,'rotate(2deg)'],[22,'rotate(2deg)']]);
+  [0,   'rotate(-6deg)'],[5.2,'rotate(-6deg)'],[7.6,'rotate(-2deg)'],
+  [8.4, 'rotate(142deg)'],[9.0,'rotate(134deg)'],[9.4,'rotate(140deg)'],
+  [12.0,'rotate(8deg)'],[16.1,'rotate(-5deg)'],[22,'rotate(-5deg)']]);
+kf('pm-forel',[[0,'rotate(5deg)'],[7.6,'rotate(6deg)'],[8.4,'rotate(-26deg)'],
+  [9.4,'rotate(-22deg)'],[12.0,'rotate(4deg)'],[16.1,'rotate(2deg)'],[22,'rotate(2deg)']]);
 /* eyebrows lift on the buzz and stay a little raised — surprise */
 kf('pm-brows',[
   [0,'translateY(0px)'],[3.05,'translateY(0px)'],[3.5,'translateY(-7px)','ease-out'],
@@ -524,16 +491,12 @@ kf('pm-brows',[
 /* ---------- VASUDHA ---------- */
 /* sits for scene 1 (body drops and settles), stands from 5s on */
 kf('vs-body',[
-  [0,   'translate(0px,76px)'],                      /* seated on the floor */
-  [4.7, 'translate(0px,76px)'],
-  [5.05,'translate(0px,80px)'],                      /* dips, then rises */
-  [5.4, 'translate(0px,-6px)'],
-  [5.75,'translate(0px,0px)'],
-  [22,  'translate(0px,0px)']]);
-kf('vs-legl',[[0,'rotate(-70deg)'],[4.7,'rotate(-70deg)'],[5.5,'rotate(0deg)'],[22,'rotate(0deg)']]);
-kf('vs-shinl',[[0,'rotate(78deg)'],[4.7,'rotate(78deg)'],[5.5,'rotate(0deg)'],[22,'rotate(0deg)']]);
-kf('vs-legr',[[0,'rotate(-58deg)'],[4.7,'rotate(-58deg)'],[5.5,'rotate(0deg)'],[22,'rotate(0deg)']]);
-kf('vs-shinr',[[0,'rotate(70deg)'],[4.7,'rotate(70deg)'],[5.5,'rotate(0deg)'],[22,'rotate(0deg)']]);
+  [0,   'translate(0px,70px)'],[4.7,'translate(0px,70px)'],[5.05,'translate(0px,75px)'],
+  [5.4, 'translate(0px,-7px)'],[5.75,'translate(0px,0px)'],[22,'translate(0px,0px)']]);
+kf('vs-legl',[[0,'rotate(-72deg)'],[4.7,'rotate(-72deg)'],[5.5,'rotate(0deg)'],[22,'rotate(0deg)']]);
+kf('vs-shinl',[[0,'rotate(80deg)'],[4.7,'rotate(80deg)'],[5.5,'rotate(0deg)'],[22,'rotate(0deg)']]);
+kf('vs-legr',[[0,'rotate(-60deg)'],[4.7,'rotate(-60deg)'],[5.5,'rotate(0deg)'],[22,'rotate(0deg)']]);
+kf('vs-shinr',[[0,'rotate(72deg)'],[4.7,'rotate(72deg)'],[5.5,'rotate(0deg)'],[22,'rotate(0deg)']]);
 kf('vs-torso',[
   [0,'rotate(-6deg)'],[4.7,'rotate(-6deg)'],[5.3,'rotate(0deg)'],
   [12.2,'rotate(0deg)'],[13.0,'rotate(-4deg)'],[15.9,'rotate(0deg)'],[22,'rotate(0deg)']
@@ -554,31 +517,26 @@ kf('vs-head',[
 ]);
 /* her left arm holds the phone up in scene 1; both hands fly to her face in scene 3 */
 kf('vs-arml',[
-  [0,   'rotate(-22deg)'],                           /* phone held in front */
-  [5.0, 'rotate(-20deg)'],
-  [5.8, 'rotate(7deg)'],
-  [12.2,'rotate(7deg)','cubic-bezier(.3,0,.2,1)'],
-  [12.45,'rotate(-4deg)'],                           /* anticipation before the gasp */
-  [13.2,'rotate(132deg)'],                           /* elbows out, hands to her face */
-  [15.2,'rotate(128deg)'],
-  [16.1,'rotate(5deg)'],
-  [22,  'rotate(5deg)']]);
+  [0,   'rotate(35deg)'],
+  [5.0, 'rotate(33deg)'],
+  [5.8, 'rotate(5deg)'],
+  [12.2,'rotate(5deg)','cubic-bezier(.3,0,.2,1)'],
+  [12.45,'rotate(-5deg)'],
+  [13.2,'rotate(119deg)'],
+  [15.2,'rotate(115deg)'],
+  [16.1,'rotate(4deg)'],
+  [22,  'rotate(4deg)']]);
 kf('vs-forel',[
-  [0,'rotate(-96deg)'],[5.0,'rotate(-92deg)'],[5.8,'rotate(-8deg)'],
-  [12.2,'rotate(-8deg)'],[12.45,'rotate(2deg)'],[13.2,'rotate(94deg)'],[15.2,'rotate(91deg)'],
+  [0,'rotate(-101deg)'],[5.0,'rotate(-98deg)'],[5.8,'rotate(-6deg)'],
+  [12.2,'rotate(-6deg)'],[12.45,'rotate(2deg)'],[13.2,'rotate(129deg)'],[15.2,'rotate(125deg)'],
   [16.1,'rotate(-2deg)'],[22,'rotate(-2deg)']]);
 kf('vs-armr',[
-  [0,   'rotate(-9deg)'],
-  [5.8, 'rotate(-9deg)'],
-  [12.2,'rotate(-9deg)','cubic-bezier(.3,0,.2,1)'],
-  [12.45,'rotate(2deg)'],
-  [13.2,'rotate(-132deg)'],
-  [15.2,'rotate(-128deg)'],
-  [16.1,'rotate(-11deg)'],
-  [22,  'rotate(-11deg)']]);
+  [0,   'rotate(-8deg)'],[5.8,'rotate(-8deg)'],
+  [12.2,'rotate(-8deg)','cubic-bezier(.3,0,.2,1)'],[12.45,'rotate(3deg)'],
+  [13.2,'rotate(-119deg)'],[15.2,'rotate(-115deg)'],[16.1,'rotate(-9deg)'],[22,'rotate(-9deg)']]);
 kf('vs-forer',[
-  [0,'rotate(6deg)'],[5.8,'rotate(6deg)'],[12.2,'rotate(6deg)'],[12.45,'rotate(-2deg)'],
-  [13.2,'rotate(-94deg)'],[15.2,'rotate(-91deg)'],[16.1,'rotate(4deg)'],[22,'rotate(4deg)']]);
+  [0,'rotate(5deg)'],[5.8,'rotate(5deg)'],[12.2,'rotate(5deg)'],[12.45,'rotate(-2deg)'],
+  [13.2,'rotate(-129deg)'],[15.2,'rotate(-125deg)'],[16.1,'rotate(3deg)'],[22,'rotate(3deg)']]);
 kf('vs-brows',[[0,'translateY(0px)'],[12.4,'translateY(0px)'],[13.0,'translateY(-6px)'],
                [14.6,'translateY(-2px)'],[22,'translateY(-2px)']]);
 
@@ -626,12 +584,10 @@ FAM.forEach((f,i)=>{
   ]);
 });
 /* f2 throws both arms up in celebration */
-kf('f2-arml',[[0,'rotate(-6deg)'],[7.7,'rotate(-6deg)'],[8.5,'rotate(-150deg)'],
-              [9.0,'rotate(-142deg)'],[9.9,'rotate(-150deg)'],[22,'rotate(-150deg)']]);
-kf('f2-armr',[[0,'rotate(6deg)'],[7.7,'rotate(6deg)'],[8.5,'rotate(150deg)'],
-              [9.0,'rotate(142deg)'],[9.9,'rotate(150deg)'],[22,'rotate(150deg)']]);
-kf('f2-forel',[[0,'rotate(0deg)'],[7.7,'rotate(0deg)'],[8.5,'rotate(26deg)'],[22,'rotate(26deg)']]);
-kf('f2-forer',[[0,'rotate(0deg)'],[7.7,'rotate(0deg)'],[8.5,'rotate(-26deg)'],[22,'rotate(-26deg)']]);
+kf('f2-arml',[[0,'rotate(-6deg)'],[7.7,'rotate(-6deg)'],[8.5,'rotate(142deg)'],[9.0,'rotate(134deg)'],[9.9,'rotate(142deg)'],[22,'rotate(142deg)']]);
+kf('f2-armr',[[0,'rotate(6deg)'],[7.7,'rotate(6deg)'],[8.5,'rotate(-142deg)'],[9.0,'rotate(-134deg)'],[9.9,'rotate(-142deg)'],[22,'rotate(-142deg)']]);
+kf('f2-forel',[[0,'rotate(0deg)'],[7.7,'rotate(0deg)'],[8.5,'rotate(-24deg)'],[22,'rotate(-24deg)']]);
+kf('f2-forer',[[0,'rotate(0deg)'],[7.7,'rotate(0deg)'],[8.5,'rotate(24deg)'],[22,'rotate(24deg)']]);
 /* and a little bounce of joy under him */
 kf('f2-bodyhop',[[0,'translateY(0px)'],[8.5,'translateY(0px)'],[8.8,'translateY(-16px)','ease-out'],
                  [9.15,'translateY(0px)','ease-in'],[9.3,'translateY(-7px)','ease-out'],

@@ -189,17 +189,19 @@ function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a
    cute rather than as a wooden toy.                                   */
 function face(id,o){
   return `
-    <ellipse cx="-39" cy="-250" rx="14" ry="8.5" fill="${o.blush}" opacity=".5"/>
-    <ellipse cx="39"  cy="-250" rx="14" ry="8.5" fill="${o.blush}" opacity=".5"/>
+    <ellipse cx="-40" cy="-252" rx="13" ry="7.5" fill="${o.blush}" opacity=".42"/>
+    <ellipse cx="40"  cy="-252" rx="13" ry="7.5" fill="${o.blush}" opacity=".42"/>
     <g class="brows an an-${id}-brows">
-      <path d="M -32,-291 Q -22,-299 -12,-292" stroke="${o.hair}" stroke-width="4.4" fill="none" stroke-linecap="round"/>
-      <path d="M 12,-292  Q 22,-299 32,-291"  stroke="${o.hair}" stroke-width="4.4" fill="none" stroke-linecap="round"/>
+      <path d="M -33,-294 Q -23,-302 -13,-296" stroke="${o.brow}" stroke-width="3.6" fill="none" stroke-linecap="round" opacity=".85"/>
+      <path d="M 13,-296  Q 23,-302 33,-294"  stroke="${o.brow}" stroke-width="3.6" fill="none" stroke-linecap="round" opacity=".85"/>
     </g>
     <g class="eyes an an-${id}-eyes">
-      <ellipse cx="-22" cy="-273" rx="7.6" ry="9" fill="#2c1a1e"/>
-      <ellipse cx="22"  cy="-273" rx="7.6" ry="9" fill="#2c1a1e"/>
+      <ellipse cx="-25" cy="-272" rx="8.4" ry="10" fill="#3a2226"/>
+      <ellipse cx="25"  cy="-272" rx="8.4" ry="10" fill="#3a2226"/>
+      <circle cx="-27.5" cy="-276" r="2.9" fill="#fff" opacity=".88"/>
+      <circle cx="22.5"  cy="-276" r="2.9" fill="#fff" opacity=".88"/>
     </g>
-    <path d="M -15,-249 Q 0,-235 15,-249" stroke="#2c1a1e" stroke-width="4.4" fill="none" stroke-linecap="round"/>`;
+    <path d="M -17,-250 Q 0,-233 17,-250" stroke="#3a2226" stroke-width="4.6" fill="none" stroke-linecap="round"/>`;
 }
 /* one arm: tapered upper + forearm + mitten hand, props ride in the hand */
 function arm(id,side,o){
@@ -211,6 +213,8 @@ function arm(id,side,o){
       <path d="M ${sx-10.5},-148 Q ${sx},-153 ${sx+10.5},-148 L ${sx+9.5},-100 Q ${sx},-94 ${sx-9.5},-100 Z"
             fill="${o.sleeve}" stroke="${o.sleeveDk}" stroke-width="1.8" stroke-linejoin="round"/>
       <path d="M ${sx-10.5},-103 Q ${sx},-98 ${sx+10.5},-103" stroke="${o.trim}" stroke-width="4.6" fill="none" stroke-linecap="round"/>
+      ${o.bangles ? `<path d="M ${sx-10.2},-110 Q ${sx},-105 ${sx+10.2},-110" stroke="${o.trim}" stroke-width="3.4" fill="none" stroke-linecap="round"/>
+        <path d="M ${sx-10},-117 Q ${sx},-112 ${sx+10},-117" stroke="${o.trim}" stroke-width="3" fill="none" stroke-linecap="round" opacity=".85"/>` : ''}
       <ellipse cx="${sx}" cy="-89" rx="12.5" ry="13.5" fill="${o.skin}" stroke="${o.skinSh}" stroke-width="1.6"/>
       ${o['prop'+side]||''}
     </g></g>`;
@@ -234,30 +238,37 @@ function makeChar(id,o){
   /* ---- Prem: cream sherwani, maroon safa with a kalgi ---- */
   const sherwani = `
     <path d="M -37,-193 Q -32,-205 0,-207 Q 32,-205 37,-193 L 51,-80 Q 0,-69 -51,-80 Z" fill="${o.garment}"/>
+    <path d="M 0,-207 Q 32,-205 37,-193 L 51,-80 Q 26,-74 0,-71 Z" fill="${o.garmentDk}" opacity=".16"/>
     <path d="M 0,-196 L 0,-74" stroke="${o.trim}" stroke-width="3.4" opacity=".9"/>
     <circle cx="0" cy="-172" r="3.6" fill="${o.trim}"/><circle cx="0" cy="-148" r="3.6" fill="${o.trim}"/>
     <circle cx="0" cy="-124" r="3.6" fill="${o.trim}"/><circle cx="0" cy="-100" r="3.6" fill="${o.trim}"/>
     <path d="M -51,-80 Q 0,-69 51,-80 L 50,-94 Q 0,-83 -50,-94 Z" fill="${o.trim}" opacity=".95"/>`;
   const safa = `
-    <path d="M -64,-284 C -68,-330 -42,-354 0,-354 C 42,-354 68,-330 64,-284
-             C 36,-300 -36,-300 -64,-284 Z" fill="${o.hat}"/>
-    <path d="M -64,-288 C -40,-304 40,-304 64,-288 L 63,-276 C 38,-293 -38,-293 -63,-276 Z" fill="${o.hatDk}"/>
-    <path d="M -58,-312 C -34,-325 34,-325 58,-312" stroke="${o.hatDk}" stroke-width="6.5" fill="none" opacity=".5"/>
-    <path d="M -47,-335 C -27,-345 27,-345 47,-335" stroke="${o.hatDk}" stroke-width="5.5" fill="none" opacity=".4"/>
-    <path d="M 57,-294 C 70,-287 74,-273 69,-259 C 68,-271 61,-282 51,-288 Z" fill="${o.hatDk}"/>
-    <path d="M -24,-346 C -31,-364 -27,-380 -17,-389 C -21,-373 -21,-360 -18,-349 Z" fill="${o.trim}"/>
-    <path d="M -24,-346 C -34,-360 -34,-372 -28,-381 C -29,-368 -27,-357 -21,-348 Z" fill="${o.trim}" opacity=".75"/>
-    <circle cx="-23" cy="-337" r="9.5" fill="${o.trim}"/>
-    <circle cx="-23" cy="-337" r="4" fill="#8c1f2e"/>`;
+    <defs><clipPath id="tc-${id}"><path d="M -64,-296 C -69,-340 -42,-362 0,-362 C 42,-362 69,-340 64,-296 C 36,-312 -36,-312 -64,-296 Z"/></clipPath></defs>
+    <path d="M -64,-296 C -69,-340 -42,-362 0,-362 C 42,-362 69,-340 64,-296
+             C 36,-312 -36,-312 -64,-296 Z" fill="${o.hat}"/>
+    <g clip-path="url(#tc-${id})">
+      <path d="M -70,-292 C -40,-308 30,-326 74,-322 L 74,-310 C 30,-314 -38,-298 -70,-282 Z" fill="${o.hatDk}" opacity=".8"/>
+      <path d="M -74,-312 C -44,-334 20,-352 70,-348" stroke="${o.hatDk}" stroke-width="7" fill="none" opacity=".55"/>
+      <path d="M -70,-332 C -44,-350 4,-368 48,-368" stroke="${o.hatDk}" stroke-width="6" fill="none" opacity=".42"/>
+      <path d="M 30,-364 C 54,-352 64,-334 66,-314" stroke="${o.hatDk}" stroke-width="4.5" fill="none" opacity=".3"/>
+    </g>
+    <path d="M 57,-304 C 71,-296 75,-280 70,-264 C 69,-278 61,-291 51,-298 Z" fill="${o.hatDk}"/>
+    <path d="M -24,-354 C -31,-372 -27,-388 -17,-397 C -21,-381 -21,-368 -18,-357 Z" fill="${o.trim}"/>
+    <path d="M -24,-354 C -34,-368 -34,-380 -28,-389 C -29,-376 -27,-365 -21,-356 Z" fill="${o.trim}" opacity=".75"/>
+    <circle cx="-23" cy="-345" r="9.5" fill="${o.trim}"/>
+    <circle cx="-23" cy="-345" r="4" fill="#8c1f2e"/>`;
 
   /* ---- Vasudha: red-and-gold lehenga, dupatta, long plait ---- */
   const choli = `
     <path d="M -35,-193 Q -30,-205 0,-207 Q 30,-205 35,-193 L 41,-150 Q 0,-142 -41,-150 Z" fill="${o.garment}"/>
+    <path d="M 0,-207 Q 30,-205 35,-193 L 41,-150 Q 20,-146 0,-144 Z" fill="${o.garmentDk}" opacity=".16"/>
     <path d="M -41,-152 Q 0,-145 41,-152" stroke="${o.trim}" stroke-width="4.2" fill="none" stroke-linecap="round"/>
     <path d="M -34,-153 Q 0,-146 34,-153 L 33,-131 Q 0,-124 -33,-131 Z" fill="${o.skin}"/>`;
   const lehenga = `
     <g class="skirt an an-${id}-skirt">
       <path d="M -35,-136 Q 0,-143 35,-136 L 88,-6 Q 0,11 -88,-6 Z" fill="${o.garment}"/>
+      <path d="M 0,-139 Q 20,-140 35,-136 L 88,-6 Q 44,3 0,11 Z" fill="${o.garmentDk}" opacity=".15"/>
       <path d="M -35,-136 Q 0,-143 35,-136 L 47,-106 Q 0,-97 -47,-106 Z" fill="${o.garmentDk}" opacity=".35"/>
       <path d="M -62,-66 Q 0,-55 62,-66" stroke="${o.trim}" stroke-width="3.4" fill="none" opacity=".8"/>
       <path d="M -88,-6 Q 0,11 88,-6 L 85,-23 Q 0,-6 -85,-23 Z" fill="${o.trim}"/>
@@ -269,16 +280,20 @@ function makeChar(id,o){
     </g>`;
   const hairBack = `
     <path d="M -72,-258 C -78,-322 -44,-356 0,-356 C 44,-356 78,-322 72,-258
-             C 72,-224 64,-206 56,-196 L -56,-196 C -64,-206 -72,-224 -72,-258 Z" fill="${o.hair}"/>`;
+             C 72,-224 64,-206 56,-196 L -56,-196 C -64,-206 -72,-224 -72,-258 Z" fill="${o.hair}"/>
+    <path d="M 40,-300 C 62,-280 68,-242 62,-206 L 56,-196 C 66,-232 62,-274 40,-300 Z" fill="#000" opacity=".22"/>`;
   const hairFront = `
     <path d="M -65,-264 C -70,-324 -41,-353 0,-353 C 41,-353 70,-324 65,-264
              C 58,-292 40,-307 0,-307 C -40,-307 -58,-292 -65,-264 Z" fill="${o.hair}"/>
+    <path d="M -46,-324 C -34,-342 -12,-350 6,-349 C -10,-342 -28,-330 -38,-312 Z" fill="#6a4a44" opacity=".35"/>
     <path d="M 0,-353 L 0,-309" stroke="${o.hairDk}" stroke-width="3.2" opacity=".85"/>
     <path d="M 0,-306 L 0,-294" stroke="${o.trim}" stroke-width="3.2"/>
     <circle cx="0" cy="-289" r="6.4" fill="${o.trim}"/>
     <circle cx="0" cy="-289" r="2.6" fill="#8c1f2e"/>
-    <circle cx="-57" cy="-242" r="6" fill="${o.trim}"/>
-    <circle cx="57"  cy="-242" r="6" fill="${o.trim}"/>`;
+    <circle cx="-57" cy="-244" r="5" fill="${o.trim}"/>
+    <path d="M -63,-239 L -51,-239 L -57,-227 Z" fill="${o.trim}"/>
+    <circle cx="57"  cy="-244" r="5" fill="${o.trim}"/>
+    <path d="M 51,-239 L 63,-239 L 57,-227 Z" fill="${o.trim}"/>`;
   const plait = `
     <g class="plait an an-${id}-plait">
       <path d="M 50,-290 C 78,-258 80,-206 70,-166 C 65,-144 60,-130 56,-120"
@@ -319,8 +334,9 @@ function makeChar(id,o){
       <g class="head an an-${id}-head">
         ${o.kind==='lehenga' ? hairBack : ''}
         <circle cx="0" cy="-268" r="62" fill="${o.skin}"/>
-        <circle cx="-60" cy="-258" r="8.5" fill="${o.skinSh}" opacity=".9"/>
-        <circle cx="60"  cy="-258" r="8.5" fill="${o.skinSh}" opacity=".9"/>
+        <path d="M 14,-327 A 62,62 0 0 1 14,-209 A 56,62 0 0 0 14,-327 Z" fill="${o.skinSh}" opacity=".14"/>
+        <circle cx="-60" cy="-258" r="8.5" fill="${o.skinSh}" opacity=".85"/>
+        <circle cx="60"  cy="-258" r="8.5" fill="${o.skinSh}" opacity=".85"/>
         ${face(id,o)}
         ${headwear}
         ${o.kind==='lehenga' ? plait : ''}
@@ -330,10 +346,21 @@ function makeChar(id,o){
       <circle cx="-36" cy="-187" r="13" fill="${o.sleeve}"/>
       <circle cx="36"  cy="-187" r="13" fill="${o.sleeve}"/>
       ${o.kind==='sherwani' ? `<path d="M -37,-193 Q -32,-205 0,-207 Q 32,-205 37,-193 L 36,-180 Q 0,-192 -36,-180 Z" fill="${o.garment}"/>` : ''}
-      ${o.kind==='lehenga'  ? `<path d="M -35,-193 Q -30,-205 0,-207 Q 30,-205 35,-193 L 34,-176 Q 20,-184 16,-190 Q 0,-178 -16,-190 Q -20,-184 -34,-176 Z" fill="${o.garment}"/>` : ''}
+      ${o.kind==='lehenga'  ? `<path d="M -35,-193 Q -30,-205 0,-207 Q 30,-205 35,-193 L 34,-176 Q 20,-184 16,-190 Q 0,-178 -16,-190 Q -20,-184 -34,-176 Z" fill="${o.garment}"/>
+        <path d="M -19,-191 Q 0,-174 19,-191" stroke="${o.trim}" stroke-width="3.6" fill="none"/>
+        <circle cx="0" cy="-176" r="5" fill="${o.trim}"/>
+        <circle cx="-11" cy="-181" r="3" fill="${o.trim}"/>
+        <circle cx="11"  cy="-181" r="3" fill="${o.trim}"/>` : ''}
       ${o.kind==='simple'   ? `<path d="M -35,-193 Q -30,-205 0,-207 Q 30,-205 35,-193 L 34,-180 Q 0,-192 -34,-180 Z" fill="${o.garment}"/>` : ''}
       <path d="M -15,-207 Q 0,-201 15,-207 L 14,-189 Q 0,-182 -14,-189 Z" fill="${o.skinSh}"/>
-      ${o.kind==='sherwani' ? `<path d="M -19,-199 Q 0,-191 19,-199 L 18,-184 Q 0,-177 -18,-184 Z" fill="${o.garmentDk}"/><path d="M -19,-199 Q 0,-191 19,-199" stroke="${o.trim}" stroke-width="2.6" fill="none" opacity=".8"/>` : ''}
+      ${o.kind==='sherwani' ? `<path d="M -36,-194 Q -22,-199 -12,-196 L 30,-78 Q 18,-72 6,-73 Z" fill="${o.stole}"/>
+        <path d="M -12,-196 L 30,-78" stroke="${o.trim}" stroke-width="3.4" fill="none" opacity=".9"/>
+        <path d="M -36,-194 L 6,-73" stroke="${o.trim}" stroke-width="2.6" fill="none" opacity=".6"/>
+        <circle cx="-5" cy="-166" r="3.2" fill="${o.trim}" opacity=".85"/>
+        <circle cx="6"  cy="-134" r="3.2" fill="${o.trim}" opacity=".85"/>
+        <circle cx="17" cy="-102" r="3.2" fill="${o.trim}" opacity=".85"/>
+        <path d="M -19,-199 Q 0,-191 19,-199 L 18,-184 Q 0,-177 -18,-184 Z" fill="${o.garmentDk}"/>
+        <path d="M -19,-199 Q 0,-191 19,-199" stroke="${o.trim}" stroke-width="2.6" fill="none" opacity=".8"/>` : ''}
     </g></g></svg>`;
 }
 
@@ -347,12 +374,12 @@ const RING=`<g class="an an-ringhold" style="transform-box:view-box;transform-or
        <path d="M 40,-150 L 46,-110 L 86,-104 L 46,-98 L 40,-58 L 34,-98 L -6,-104 L 34,-110 Z" fill="url(#sparkle)"/></g>
      <circle cx="40" cy="-102" r="10" fill="none" stroke="#f0c75a" stroke-width="4.5"/>
      <circle cx="40" cy="-115" r="6" fill="#fff6dd"/></g>`;
-const PREM={ kind:'sherwani', skin:'#eab889', skinSh:'#c9915f', blush:'#e9897b', hair:'#2e1a16', hairDk:'#1d100d',
+const PREM={ kind:'sherwani', skin:'#eab889', skinSh:'#c9915f', blush:'#e9897b', hair:'#2e1a16', hairDk:'#1d100d', brow:'#5a3a2e',
   garment:'#f3e4c8', garmentDk:'#d9c49f', sleeve:'#f3e4c8', sleeveDk:'#d2bc93', trim:'#cf9c33',
-  trouser:'#ece0c6', trouserDk:'#cdbe9e', shoe:'#c9952f', shoeDk:'#9e7019', hat:'#8e2436', hatDk:'#6f1a29', propr:PHONE(33,-18)+RING };
-const VASU={ kind:'lehenga', skin:'#edbb92', skinSh:'#cb9468', blush:'#e07f7f', hair:'#241310', hairDk:'#120807',
+  trouser:'#ece0c6', trouserDk:'#cdbe9e', shoe:'#c9952f', shoeDk:'#9e7019', stole:'#9e2a3c', hat:'#8e2436', hatDk:'#6b1826', propr:PHONE(33,-18)+RING };
+const VASU={ kind:'lehenga', skin:'#edbb92', skinSh:'#cb9468', blush:'#e07f7f', hair:'#241310', hairDk:'#120807', brow:'#4a2a22',
   garment:'#c42a3c', garmentDk:'#9c1f2e', sleeve:'#c42a3c', sleeveDk:'#951d2b', trim:'#e8bc56',
-  trouser:'#b02433', trouserDk:'#8a1b27', shoe:'#d9a63c', shoeDk:'#ab7d20', veil:'#e0636f', propl:PHONE(-33,16) };
+  trouser:'#b02433', trouserDk:'#8a1b27', shoe:'#d9a63c', shoeDk:'#ab7d20', veil:'#e0636f', bangles:true, propl:PHONE(-33,16) };
 
 /* the two leads are ONE instance each, carried through all four scenes */
 document.getElementById('leads').innerHTML =
@@ -368,9 +395,9 @@ const FAM=[
 ];
 document.getElementById('sc2bg').innerHTML = FAM.map(f=>makeChar(f.id,{
   kind:'simple', cx:f.cx, baseY:1500, w:f.w,
-  skin:'#cda07e', skinSh:'#a87c5c', blush:'#cf8c7d', hair:'#3a2a28', hairDk:'#241917',
+  skin:'#cda07e', skinSh:'#a87c5c', blush:'#cf8c7d', hair:'#3a2a28', hairDk:'#241917', brow:'#5e4038',
   garment:f.c, garmentDk:f.c, sleeve:f.c, sleeveDk:'rgba(0,0,0,.28)', trim:f.t, trouser:f.c, trouserDk:'rgba(0,0,0,.28)', shoe:'#4a3b43', shoeDk:'#2b2227',
-  hatSimple:`<path d="M -64,-282 C -68,-326 -42,-350 0,-350 C 42,-350 68,-326 64,-282 C 36,-300 -36,-300 -64,-282 Z" fill="${f.hat}"/><path d="M -64,-286 C -40,-301 40,-301 64,-286 L 63,-275 C 38,-290 -38,-290 -63,-275 Z" fill="${f.hat}" opacity=".55"/>`
+  hatSimple:`<path d="M -64,-294 C -68,-338 -42,-360 0,-360 C 42,-360 68,-338 64,-294 C 36,-310 -36,-310 -64,-294 Z" fill="${f.hat}"/><path d="M -64,-298 C -40,-313 40,-313 64,-298 L 63,-287 C 38,-302 -38,-302 -63,-287 Z" fill="${f.hat}" opacity=".55"/>`
 })).join('');
 </script>
 

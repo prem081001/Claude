@@ -1,0 +1,838 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Prem &amp; Vasudha — Save The Date</title>
+<style>
+  /* ==========================================================
+     1080x1920 · 22s · 30fps · 660 frames
+     DETERMINISM: every animation is a CSS @keyframes spanning the
+     full 22s, declared `paused`, with animation-delay: var(--t).
+     setFrame(n) sets --t to -(n/30)s, which scrubs every animation
+     on the page to exactly that instant. No clock, no rAF timing.
+     ========================================================== */
+  :root{ --t: 0s; }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html,body{ width:1080px; height:1920px; background:#120a14; overflow:hidden; }
+  body{
+    font-family:'Inter Display','Inter',system-ui,ui-sans-serif,'DejaVu Sans',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  #stage{ position:absolute; inset:0; width:1080px; height:1920px; }
+  svg{ display:block; }
+
+  /* every animated element wears .an and gets its name from .an-<x> */
+  .an{
+    animation-duration:22s;
+    animation-fill-mode:both;
+    animation-play-state:paused;
+    animation-delay:var(--t);
+    animation-timing-function:linear;
+    animation-iteration-count:1;
+  }
+
+  /* ---- rig: joints. transform-box:view-box resolves against each
+          character's OWN nested <svg> viewBox, so these are local
+          joint coordinates and limbs rotate from the joint. ---- */
+  .char       { overflow:visible; }
+  .body       { transform-box:view-box; transform-origin:0px 0px; }
+  .torso      { transform-box:view-box; transform-origin:0px -96px; }
+  .head       { transform-box:view-box; transform-origin:0px -186px; }
+  .leg-l      { transform-box:view-box; transform-origin:-15px -96px; }
+  .leg-r      { transform-box:view-box; transform-origin:15px -96px; }
+  .shin-l     { transform-box:view-box; transform-origin:-15px -48px; }
+  .shin-r     { transform-box:view-box; transform-origin:15px -48px; }
+  .arm-l      { transform-box:view-box; transform-origin:-33px -176px; }
+  .arm-r      { transform-box:view-box; transform-origin:33px -176px; }
+  .fore-l     { transform-box:view-box; transform-origin:-33px -134px; }
+  .fore-r     { transform-box:view-box; transform-origin:33px -134px; }
+  .eyes       { transform-box:view-box; transform-origin:0px -226px; }
+  .brows      { transform-box:view-box; transform-origin:0px -240px; }
+  .plait      { transform-box:view-box; transform-origin:0px -244px; }
+  .dupatta    { transform-box:view-box; transform-origin:-30px -200px; }
+  .skirt      { transform-box:view-box; transform-origin:0px -104px; }
+
+  /* position groups live in the ROOT viewBox, so their origins are
+     stage coordinates — the character's ground point, so scaling
+     keeps the feet planted. */
+  .pos{ transform-box:view-box; transform-origin:540px 1480px; }
+
+  /* ---- scene 4 text ---- */
+  #copy{ position:absolute; inset:0; }
+  .tx{
+    position:absolute; left:12%; width:76%;      /* 12% safe margin */
+    text-align:center; color:#fdf4e3; white-space:nowrap;
+    transform-box:border-box; transform-origin:50% 50%;
+  }
+  #t-names{ top:742px;  font-size:84px; font-weight:800; letter-spacing:.055em; padding-left:.055em; }
+  #t-date { top:884px;  font-size:62px; font-weight:700; letter-spacing:.13em;  padding-left:.13em; color:#f5d98a; }
+  #t-std  { top:1002px; font-size:34px; font-weight:500; letter-spacing:.56em;  padding-left:.56em; color:#e9dcc4; }
+
+  /* ---- film grain + vignette over everything ---- */
+  #grain{
+    position:absolute; inset:-60px; z-index:60; pointer-events:none;
+    background-repeat:repeat; mix-blend-mode:overlay; opacity:.07;
+  }
+  #vig{
+    position:absolute; inset:0; z-index:61; pointer-events:none;
+    background:radial-gradient(118% 76% at 50% 48%, rgba(0,0,0,0) 40%, rgba(0,0,0,.30) 74%, rgba(0,0,0,.60) 100%);
+  }
+</style>
+</head>
+<body>
+<div id="stage">
+  <svg id="root" width="1080" height="1920" viewBox="0 0 1080 1920">
+    <defs>
+      <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0"   stop-color="#2a1430"/>
+        <stop offset=".46" stop-color="#5c2733"/>
+        <stop offset=".78" stop-color="#9c4a2e"/>
+        <stop offset="1"   stop-color="#d98b3f"/>
+      </linearGradient>
+      <radialGradient id="glow" cx=".5" cy=".72" r=".6">
+        <stop offset="0" stop-color="#ffcf84" stop-opacity=".55"/>
+        <stop offset="1" stop-color="#ffcf84" stop-opacity="0"/>
+      </radialGradient>
+      <linearGradient id="goldband" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0"   stop-color="#ffd98a" stop-opacity="0"/>
+        <stop offset=".32" stop-color="#ffe6ad" stop-opacity=".92"/>
+        <stop offset=".5"  stop-color="#fff4d6" stop-opacity="1"/>
+        <stop offset=".68" stop-color="#ffe6ad" stop-opacity=".92"/>
+        <stop offset="1"   stop-color="#ffd98a" stop-opacity="0"/>
+      </linearGradient>
+      <linearGradient id="goldstroke" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#ffdf9b"/><stop offset=".5" stop-color="#f6c25c"/><stop offset="1" stop-color="#e0a23f"/>
+      </linearGradient>
+      <linearGradient id="floor" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#b9663a"/>
+        <stop offset=".34" stop-color="#8a4028"/>
+        <stop offset="1" stop-color="#3d1a1e"/>
+      </linearGradient>
+      <radialGradient id="sparkle" cx=".5" cy=".5" r=".5">
+        <stop offset="0" stop-color="#fffdf5" stop-opacity="1"/>
+        <stop offset="1" stop-color="#ffe8a8" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+
+    <!-- backdrop -->
+    <rect width="1080" height="1920" fill="url(#sky)"/>
+    <ellipse cx="540" cy="1300" rx="640" ry="500" fill="url(#glow)"/>
+    <g id="bokeh"></g>
+    <!-- ground: a warm floor meeting the sky at y=1480, with a pool of light -->
+    <rect x="0" y="1480" width="1080" height="440" fill="url(#floor)"/>
+    <ellipse cx="540" cy="1496" rx="560" ry="86" fill="#ffc987" opacity=".16"/>
+    <ellipse cx="540" cy="1486" rx="330" ry="44" fill="#ffe0ab" opacity=".14"/>
+
+    <g id="scene4bg"></g>   <!-- mandap arch, drawn behind everyone -->
+    <g id="sc2bg"></g>      <!-- four family characters -->
+    <g id="petals"></g>
+    <g id="leads"></g>      <!-- Prem + Vasudha persist through all 4 scenes -->
+    <g id="props"></g>      <!-- chat bubble, heart, ring sparkle -->
+    <g id="confetti"></g>
+    <rect id="wipe" x="-200" y="0" width="1480" height="2600" fill="url(#goldband)" class="an" opacity="0"/>
+  </svg>
+  <div id="copy">
+    <div class="tx an" id="t-names">PREM &amp; VASUDHA</div>
+    <div class="tx an" id="t-date">24 . 01 . 2027</div>
+    <div class="tx an" id="t-std">SAVE THE DATE</div>
+  </div>
+  <div id="grain"></div>
+  <div id="vig"></div>
+</div>
+
+<script>
+/* ===================== timeline core ===================== */
+const FPS=30, DUR=22, TOTAL=FPS*DUR;           // 660 frames
+const EASE='cubic-bezier(.45,.05,.2,1)';       // the house ease: soft in, soft out
+const SWING='cubic-bezier(.34,.1,.3,1)';
+let CSS='';
+
+/* kf(name, [[tSec, props, easeForSegmentStartingHere], ...])
+   props: a bare transform string, or "prop:val;prop:val" */
+function kf(name, steps){
+  let out='@keyframes '+name+'{';
+  steps.forEach(s=>{
+    const t=Math.max(0,Math.min(DUR,s[0]));
+    const pct=(t/DUR*100).toFixed(4);
+    let p=s[1];
+    if(p.indexOf(':')===-1) p='transform:'+p;
+    out+=pct+'%{'+p+';animation-timing-function:'+(s[2]||EASE)+'}';
+  });
+  CSS+=out+'}';
+  return name;
+}
+/* a looping sine, sampled every quarter period and eased between
+   extremes — reads as a continuous breath, stays deterministic */
+function swayKF(name, period, phase, fn){
+  const steps=[], q=period/4;
+  for(let t=0;t<=DUR+q;t+=q){
+    const tt=Math.min(t,DUR);
+    steps.push([tt, fn(Math.sin(2*Math.PI*((t+phase)/period))), 'ease-in-out']);
+    if(tt>=DUR) break;
+  }
+  return kf(name,steps);
+}
+/* opacity window with soft edges */
+function fadeKF(name, windows){
+  const s=[[0,'opacity:0','linear']];
+  windows.forEach(w=>{ s.push([w[0],'opacity:0','ease-in-out'],[w[1],'opacity:1','linear'],
+                              [w[2],'opacity:1','ease-in-out'],[w[3],'opacity:0','linear']); });
+  return kf(name,s);
+}
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);
+  t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+
+/* ===================== character factory ===================== */
+/* Local coords: feet at y=0, y is up-negative.
+   hips (±15,-96) · knees y=-48 · shoulders (±33,-176) · elbows y=-134
+   neck (0,-186) · head centre (0,-222) r=36                        */
+function face(o){
+  return `
+    <g class="brows an an-${o.id}-brows">
+      <path d="M -19,-241 Q -12,-246 -5,-241" stroke="${o.hair}" stroke-width="3.4" fill="none" stroke-linecap="round"/>
+      <path d="M 5,-241 Q 12,-246 19,-241"  stroke="${o.hair}" stroke-width="3.4" fill="none" stroke-linecap="round"/>
+    </g>
+    <g class="eyes an an-${o.id}-eyes">
+      <circle cx="-12" cy="-226" r="4.3" fill="#2a1a20"/>
+      <circle cx="12"  cy="-226" r="4.3" fill="#2a1a20"/>
+    </g>
+    <ellipse cx="-23" cy="-215" rx="7.5" ry="5" fill="#e98b7d" opacity=".5"/>
+    <ellipse cx="23"  cy="-215" rx="7.5" ry="5" fill="#e98b7d" opacity=".5"/>
+    <path d="M -10,-211 Q 0,-202 10,-211" stroke="#2a1a20" stroke-width="3.2" fill="none" stroke-linecap="round"/>`;
+}
+function limb(id,side,o,opts){
+  const sx = side==='l' ? -33 : 33, hx = side==='l' ? -15 : 15;
+  if(opts==='arm'){
+    return `<g class="arm arm-${side} an an-${id}-arm${side}">
+      <rect x="${sx-10}" y="-180" width="20" height="54" rx="10" fill="${o.sleeve}"/>
+      <g class="fore fore-${side} an an-${id}-fore${side}">
+        <rect x="${sx-9.5}" y="-142" width="19" height="52" rx="9.5" fill="${o.sleeve}"/>
+        <path d="M ${sx-9},-96 h 18" stroke="${o.trim}" stroke-width="3" opacity=".8"/>
+        <circle cx="${sx}" cy="-84" r="11.5" fill="${o.skin}"/>
+        ${o['prop'+side]||''}
+      </g></g>`;
+  }
+  return `<g class="leg leg-${side} an an-${id}-leg${side}">
+      <rect x="${hx-11}" y="-99" width="22" height="54" rx="11" fill="${o.trouser}"/>
+      <g class="shin shin-${side} an an-${id}-shin${side}">
+        <rect x="${hx-10}" y="-52" width="20" height="54" rx="10" fill="${o.trouser}"/>
+        <path d="M ${hx-11},2 Q ${hx-12},-7 ${hx-2},-7 L ${hx+6},-7 Q ${hx+19},-6 ${hx+19},3 Z" fill="${o.shoe}"/>
+      </g></g>`;
+}
+function makeChar(id,o){
+  const sherwani = `
+    <path d="M -31,-182 Q 0,-190 31,-182 L 38,-70 Q 0,-62 -38,-70 Z" fill="${o.garment}"/>
+    <path d="M -31,-182 Q 0,-190 31,-182 L 31,-170 Q 0,-178 -31,-170 Z" fill="${o.garmentDk}" opacity=".5"/>
+    <path d="M 0,-186 L 0,-66" stroke="${o.trim}" stroke-width="3" opacity=".85"/>
+    <circle cx="0" cy="-160" r="3.1" fill="${o.trim}"/><circle cx="0" cy="-138" r="3.1" fill="${o.trim}"/>
+    <circle cx="0" cy="-116" r="3.1" fill="${o.trim}"/><circle cx="0" cy="-94" r="3.1" fill="${o.trim}"/>
+    <path d="M -38,-72 Q 0,-64 38,-72" stroke="${o.trim}" stroke-width="3.6" fill="none" opacity=".9"/>`;
+  const choli = `
+    <path d="M -29,-180 Q 0,-188 29,-180 L 31,-126 Q 0,-120 -31,-126 Z" fill="${o.garment}"/>
+    <path d="M -31,-128 Q 0,-122 31,-128" stroke="${o.trim}" stroke-width="3" fill="none"/>
+    <path d="M -22,-118 Q 0,-112 22,-118 L 20,-104 Q 0,-99 -20,-104 Z" fill="${o.skin}"/>`;
+  const lehenga = `
+    <g class="skirt an an-${id}-skirt">
+      <path d="M -24,-108 Q 0,-113 24,-108 L 66,-4 Q 0,10 -66,-4 Z" fill="${o.garment}"/>
+      <path d="M -47,-56 Q 0,-48 47,-56" stroke="${o.trim}" stroke-width="2.6" fill="none" opacity=".75"/>
+      <path d="M -66,-4 Q 0,10 66,-4 L 64,-16 Q 0,-2 -64,-16 Z" fill="${o.trim}"/>
+      <circle cx="-30" cy="-34" r="3" fill="${o.trim}" opacity=".9"/>
+      <circle cx="0"   cy="-28" r="3" fill="${o.trim}" opacity=".9"/>
+      <circle cx="30"  cy="-34" r="3" fill="${o.trim}" opacity=".9"/>
+      <circle cx="-15" cy="-62" r="2.6" fill="${o.trim}" opacity=".8"/>
+      <circle cx="15"  cy="-62" r="2.6" fill="${o.trim}" opacity=".8"/>
+    </g>`;
+  const turban = `
+    <path d="M -38,-228 C -42,-266 -25,-292 0,-292 C 25,-292 42,-266 38,-228 C 18,-240 -18,-240 -38,-228 Z" fill="${o.hat}"/>
+    <path d="M -38,-230 C -20,-242 20,-242 38,-230 L 37,-220 C 18,-232 -18,-232 -37,-220 Z" fill="${o.hatDk}"/>
+    <path d="M -38,-252 C -22,-268 22,-268 38,-252 C 20,-258 -20,-258 -38,-252 Z" fill="${o.hatDk}" opacity=".7"/>
+    <path d="M 30,-276 C 44,-286 52,-276 48,-262 C 44,-270 36,-272 30,-268 Z" fill="${o.hatDk}"/>
+    <circle cx="0" cy="-286" r="7.5" fill="${o.trim}"/>
+    <circle cx="0" cy="-286" r="3" fill="#8c2230"/>
+    <path d="M -2,-293 L 2,-293 L 0,-306 Z" fill="${o.trim}"/>`;
+  const hairF = `
+    <path d="M -37,-224 C -40,-266 -22,-290 0,-290 C 22,-290 40,-266 37,-224 C 24,-248 -24,-248 -37,-224 Z" fill="${o.hair}"/>
+    <path d="M 0,-290 L 0,-258" stroke="${o.hairDk}" stroke-width="2.4" opacity=".8"/>
+    <path d="M 0,-252 L 0,-240 M 0,-236 a 4,4 0 1,0 .1,0" stroke="${o.trim}" stroke-width="2.6" fill="${o.trim}"/>
+    <g class="plait an an-${id}-plait">
+      <path d="M 24,-256 Q 48,-220 44,-168 Q 41,-126 34,-104" stroke="${o.hair}" stroke-width="19" fill="none" stroke-linecap="round"/>
+      <path d="M 40,-206 q 7,3 0,7 M 42,-180 q 7,3 0,7 M 41,-154 q 7,3 0,7 M 38,-128 q 7,3 0,7"
+            stroke="${o.hairDk}" stroke-width="2.8" fill="none" stroke-linecap="round" opacity=".9"/>
+      <path d="M 33,-104 l -6,15 l 12,0 Z" fill="${o.trim}"/>
+    </g>`;
+  const dupatta = `
+    <g class="dupatta an an-${id}-dupatta">
+      <path d="M -24,-194 Q -54,-172 -62,-118 Q -70,-58 -56,-6 L -30,-8 Q -42,-60 -36,-112 Q -32,-152 -12,-178 Z"
+            fill="${o.veil}" opacity=".62"/>
+      <path d="M -24,-194 Q -54,-172 -62,-118 Q -70,-58 -56,-6" stroke="${o.trim}" stroke-width="2.4" fill="none" opacity=".6"/>
+    </g>`;
+
+  const torsoInner = o.kind==='lehenga' ? choli : sherwani;
+  const headExtra  = o.kind==='lehenga' ? hairF : (o.kind==='sherwani' ? turban : (o.hatSimple||''));
+
+  return `<svg id="${id}" class="char" overflow="visible"
+            x="${o.cx-o.w/2}" y="${o.baseY-0.911765*(o.w*340/240)}"
+            width="${o.w}" height="${o.w*340/240}" viewBox="-120 -310 240 340">
+    <g class="shell an an-${id}-shell">
+    <ellipse cx="0" cy="3" rx="54" ry="12" fill="#2a0f14" opacity=".34"/>
+    <g class="body an an-${id}-body">
+      ${o.kind==='lehenga' ? dupatta : ''}
+      ${limb(id,'l',o)}
+      ${limb(id,'r',o)}
+      <g class="torso an an-${id}-torso">
+        ${o.kind==='lehenga' ? lehenga : ''}
+        ${torsoInner}
+      </g>
+      <g class="head an an-${id}-head">
+        <rect x="-8" y="-200" width="16" height="22" rx="7" fill="${o.skin}"/>
+        <circle cx="0" cy="-222" r="36" fill="${o.skin}"/>
+        ${face({id:id,hair:o.hair})}
+        ${headExtra}
+      </g>
+      ${limb(id,'l',o,'arm')}
+      ${limb(id,'r',o,'arm')}
+    </g></g></svg>`;
+}
+
+/* ===================== cast ===================== */
+const PHONE=(sx,rot)=>`<g class="an an-phone" style="transform-box:view-box;transform-origin:${sx}px -84px">
+     <rect x="${sx-15}" y="-108" width="30" height="48" rx="6" fill="#2b2733" transform="rotate(${rot} ${sx} -84)"/>
+     <rect x="${sx-11}" y="-104" width="22" height="38" rx="3" fill="#cfe4e8" transform="rotate(${rot} ${sx} -84)"/>
+   </g>`;
+const RING=`<g class="an an-ringhold" style="transform-box:view-box;transform-origin:33px -84px">
+     <g class="an an-glint" style="transform-box:view-box;transform-origin:33px -93px"><path d="M 33,-128 L 38,-98 L 68,-93 L 38,-88 L 33,-58 L 28,-88 L -2,-93 L 28,-98 Z"
+        fill="url(#sparkle)"/></g>
+     <circle cx="33" cy="-96" r="9" fill="none" stroke="#f0c75a" stroke-width="4"/>
+     <circle cx="33" cy="-107" r="5" fill="#fff6dd"/></g>`;
+const PREM={ kind:'sherwani', skin:'#e7b183', hair:'#2e1a16', hairDk:'#1d100d',
+  garment:'#f3e4c8', garmentDk:'#d9c49f', sleeve:'#e6d2a9', sleeveEdge:'#cdb68f', trim:'#d7a53f',
+  trouser:'#ece0c6', shoe:'#c9952f', hat:'#8e2436', hatDk:'#6f1a29', propr:PHONE(33,-18)+RING };
+const VASU={ kind:'lehenga', skin:'#e9b58c', hair:'#241310', hairDk:'#120807',
+  garment:'#c42a3c', garmentDk:'#9c1f2e', sleeve:'#b82435', sleeveEdge:'#8d1a28', trim:'#e8bc56',
+  trouser:'#b02433', shoe:'#d9a63c', veil:'#e0636f', propl:PHONE(-33,16) };
+
+/* the two leads are ONE instance each, carried through all four scenes */
+document.getElementById('leads').innerHTML =
+  `<g class="pos an an-pos-prem">${makeChar('pm',Object.assign({cx:540,baseY:1480,w:470},PREM))}</g>` +
+  `<g class="pos an an-pos-vasu">${makeChar('vs',Object.assign({cx:540,baseY:1480,w:470},VASU))}</g>`;
+
+/* four muted family characters for scene 2 */
+const FAM=[
+  {id:'f1',cx:104,  w:286, c:'#6d5a72', t:'#8e7a93', hat:'#55465c'},
+  {id:'f2',cx:290,  w:308, c:'#7b6354', t:'#9a7f6c', hat:'#5f4a3e'},
+  {id:'f3',cx:792,  w:308, c:'#5d6b74', t:'#7d8c96', hat:'#49555d'},
+  {id:'f4',cx:978,  w:286, c:'#74626d', t:'#93808c', hat:'#5b4b55'}
+];
+document.getElementById('sc2bg').innerHTML = FAM.map(f=>makeChar(f.id,{
+  kind:'simple', cx:f.cx, baseY:1502, w:f.w,
+  skin:'#c89a79', hair:'#3a2a28', hairDk:'#241917',
+  garment:f.c, garmentDk:f.c, sleeve:f.c, sleeveEdge:'rgba(0,0,0,.22)', trim:f.t, trouser:f.c, shoe:'#4a3b43',
+  hatSimple:`<path d="M -37,-226 C -40,-262 -22,-288 0,-288 C 22,-288 40,-262 37,-226 C 20,-244 -20,-244 -37,-226 Z" fill="${f.hat}"/>`
+})).join('');
+</script>
+
+<script>
+/* ===================== ANIMATION · scene by scene =====================
+   Scene 1  0.0– 5.0  the message
+   Scene 2  5.0–10.0  the families
+   Scene 3 10.0–15.0  the ring
+   Scene 4 15.0–22.0  the date
+   Transitions are gold-light curtains at 5 / 10 / 15 — never a hard cut.
+   ====================================================================== */
+const T1=5, T2=10, T3=15;
+
+/* ---------- position of the two leads across the whole film ----------
+   translate/scale on a group whose origin is the character's ground point,
+   so the feet stay planted when they scale.                             */
+kf('pos-prem',[
+  [0,    'translate(-242px,0px) scale(.92)'],
+  [4.7,  'translate(-242px,0px) scale(.92)'],
+  [5.3,  'translate(-112px,0px) scale(.80)'],       // steps in beside the families
+  [9.7,  'translate(-112px,0px) scale(.80)'],
+  [10.3, 'translate(-186px,0px) scale(1)'],         // closer for the ring
+  [14.7, 'translate(-186px,0px) scale(1)'],
+  [15.3, 'translate(-80px,132px) scale(.72)'],      // final two-shot, lower in frame
+  [22,   'translate(-80px,132px) scale(.72)']
+]);
+kf('pos-vasu',[
+  [0,    'translate(228px,0px) scale(.92)'],
+  [4.7,  'translate(228px,0px) scale(.92)'],
+  [5.3,  'translate(112px,0px) scale(.80)'],
+  [9.7,  'translate(112px,0px) scale(.80)'],
+  [10.3, 'translate(152px,0px) scale(1)'],
+  [14.7, 'translate(152px,0px) scale(1)'],
+  [15.3, 'translate(74px,128px) scale(.82)'],
+  [22,   'translate(74px,128px) scale(.82)']
+]);
+
+/* ---------- PREM ---------- */
+/* body: stands, then kneels (whole body drops as the knee folds), then sways */
+kf('pm-body',[
+  [0,   'translate(0px,0px)','ease-in-out'],
+  [10.6,'translate(0px,0px)'],
+  [12.0,'translate(0px,42px)'],                     // hip sinks to shin height
+  [12.28,'translate(0px,47px)','ease-out'],         // small squash as the knee lands
+  [12.65,'translate(0px,42px)'],
+  [15.0,'translate(0px,42px)'],
+  [15.9,'translate(0px,0px)'],
+  [22,  'translate(0px,0px)']
+]);
+/* a real knee fold: hip swings back, shin folds under, front leg takes the weight */
+kf('pm-legl',[[0,'rotate(0deg)'],[10.6,'rotate(0deg)'],[12.0,'rotate(6deg)'],[15.0,'rotate(6deg)'],[15.9,'rotate(0deg)'],[22,'rotate(0deg)']]);
+kf('pm-shinl',[[0,'rotate(0deg)'],[10.6,'rotate(0deg)'],[12.0,'rotate(96deg)'],[15.0,'rotate(96deg)'],[15.9,'rotate(0deg)'],[22,'rotate(0deg)']]);
+kf('pm-legr',[[0,'rotate(0deg)'],[10.6,'rotate(0deg)'],[12.0,'rotate(-86deg)'],[15.0,'rotate(-86deg)'],[15.9,'rotate(0deg)'],[22,'rotate(0deg)']]);
+kf('pm-shinr',[[0,'rotate(0deg)'],[10.6,'rotate(0deg)'],[12.0,'rotate(86deg)'],[15.0,'rotate(86deg)'],[15.9,'rotate(0deg)'],[22,'rotate(0deg)']]);
+/* torso: leans over the phone, straightens in surprise, leans in to propose */
+kf('pm-torso',[
+  [0,   'rotate(5deg)'],
+  [3.0, 'rotate(5deg)'],
+  [3.9, 'rotate(-3deg)'],                              /* pulls upright, surprised */
+  [5.0, 'rotate(-1deg)'],
+  [10.6,'rotate(-1deg)'],
+  [12.0,'rotate(4deg)'],
+  [15.9,'rotate(0deg)'],
+  [22,  'rotate(0deg)']
+]);
+/* head: down at the phone → snaps up (eased, 0.7s) → turns to her → forward */
+kf('pm-head',[
+  [0,   'rotate(9deg)'],
+  [3.1, 'rotate(9deg)'],
+  [3.8, 'rotate(-7deg)'],                              /* looks up */
+  [5.0, 'rotate(-4deg)'],
+  [6.6, 'rotate(-4deg)'],
+  [7.4, 'rotate(8deg)'],                               /* toward the centre */
+  [10.4,'rotate(8deg)'],
+  [11.6,'rotate(4deg)'],
+  [15.3,'rotate(4deg)'],
+  [16.1,'rotate(0deg)'],
+  [22,  'rotate(0deg)']
+]);
+/* right arm holds the phone, then offers the ring up to her */
+kf('pm-armr',[
+  [0,   'rotate(40deg)'],
+  [3.0, 'rotate(40deg)'],
+  [3.7, 'rotate(34deg)'],
+  [5.0, 'rotate(20deg)'],
+  [9.8, 'rotate(14deg)'],
+  [11.9,'rotate(22deg)'],
+  [12.7,'rotate(-40deg)'],                          /* offers the ring up to her */
+  [15.0,'rotate(-38deg)'],
+  [16.0,'rotate(-6deg)'],                           /* becomes the held hand */
+  [22,  'rotate(-6deg)']
+]);
+kf('pm-forer',[
+  [0,   'rotate(-56deg)'],
+  [3.0, 'rotate(-56deg)'],
+  [3.7, 'rotate(-34deg)'],
+  [5.0, 'rotate(-12deg)'],
+  [9.8, 'rotate(-8deg)'],
+  [12.7,'rotate(-62deg)'],
+  [15.0,'rotate(-60deg)'],
+  [16.0,'rotate(0deg)'],
+  [22,  'rotate(0deg)']
+]);
+/* left arm: relaxed, celebrates a touch in scene 2, steadies the knee in 3 */
+kf('pm-arml',[
+  [0,   'rotate(-10deg)'],
+  [5.2, 'rotate(-10deg)'],
+  [7.8, 'rotate(-30deg)'],
+  [9.4, 'rotate(-16deg)'],
+  [12.0,'rotate(7deg)'],
+  [15.9,'rotate(-8deg)'],
+  [22,  'rotate(-8deg)']
+]);
+kf('pm-forel',[[0,'rotate(6deg)'],[7.8,'rotate(-20deg)'],[9.4,'rotate(0deg)'],
+               [12.0,'rotate(10deg)'],[15.9,'rotate(2deg)'],[22,'rotate(2deg)']]);
+/* eyebrows lift on the buzz and stay a little raised — surprise */
+kf('pm-brows',[
+  [0,'translateY(0px)'],[3.05,'translateY(0px)'],[3.5,'translateY(-7px)','ease-out'],
+  [4.6,'translateY(-4px)'],[6.0,'translateY(-1px)'],[12.4,'translateY(-5px)'],
+  [13.6,'translateY(-1px)'],[22,'translateY(-1px)']
+]);
+
+/* ---------- VASUDHA ---------- */
+/* sits for scene 1 (body drops and settles), stands from 5s on */
+kf('vs-body',[
+  [0,   'translate(0px,70px)'],                     /* seated on the floor cushion */
+  [4.7, 'translate(0px,70px)'],
+  [5.3, 'translate(0px,0px)'],
+  [22,  'translate(0px,0px)']
+]);
+kf('vs-legl',[[0,'rotate(-62deg)'],[4.7,'rotate(-62deg)'],[5.3,'rotate(0deg)'],[22,'rotate(0deg)']]);
+kf('vs-shinl',[[0,'rotate(72deg)'],[4.7,'rotate(72deg)'],[5.3,'rotate(0deg)'],[22,'rotate(0deg)']]);
+kf('vs-legr',[[0,'rotate(-52deg)'],[4.7,'rotate(-52deg)'],[5.3,'rotate(0deg)'],[22,'rotate(0deg)']]);
+kf('vs-shinr',[[0,'rotate(64deg)'],[4.7,'rotate(64deg)'],[5.3,'rotate(0deg)'],[22,'rotate(0deg)']]);
+kf('vs-torso',[
+  [0,'rotate(-6deg)'],[4.7,'rotate(-6deg)'],[5.3,'rotate(0deg)'],
+  [12.2,'rotate(0deg)'],[13.0,'rotate(-4deg)'],[15.9,'rotate(0deg)'],[22,'rotate(0deg)']
+]);
+kf('vs-head',[
+  [0,   'rotate(-10deg)'],                              /* reading her phone */
+  [2.6, 'rotate(-8deg)'],
+  [3.4, 'rotate(-2deg)'],
+  [5.0, 'rotate(-4deg)'],
+  [6.6, 'rotate(-4deg)'],
+  [7.4, 'rotate(-9deg)'],                               /* turns to the centre */
+  [10.4,'rotate(-9deg)'],
+  [12.2,'rotate(-5deg)'],
+  [13.2,'rotate(-11deg)'],                              /* tilts behind her hands */
+  [15.3,'rotate(-8deg)'],
+  [16.1,'rotate(0deg)'],
+  [22,  'rotate(0deg)']
+]);
+/* her left arm holds the phone up in scene 1; both hands fly to her face in scene 3 */
+kf('vs-arml',[
+  [0,   'rotate(-66deg)'],                          /* holding the phone up */
+  [5.0, 'rotate(-62deg)'],
+  [5.7, 'rotate(12deg)'],
+  [12.3,'rotate(12deg)'],
+  [13.1,'rotate(-70deg)'],                          /* elbow out, hand to her face */
+  [15.2,'rotate(-67deg)'],
+  [16.0,'rotate(4deg)'],                            /* reaches for his hand */
+  [22,  'rotate(31deg)']
+]);
+kf('vs-forel',[
+  [0,'rotate(74deg)'],[5.0,'rotate(70deg)'],[5.7,'rotate(-6deg)'],
+  [12.3,'rotate(-6deg)'],[13.1,'rotate(-147deg)'],[15.2,'rotate(-144deg)'],
+  [16.0,'rotate(0deg)'],[22,'rotate(0deg)']
+]);
+kf('vs-armr',[
+  [0,   'rotate(-16deg)'],
+  [5.7, 'rotate(-12deg)'],
+  [12.3,'rotate(-12deg)'],
+  [13.1,'rotate(70deg)'],
+  [15.2,'rotate(67deg)'],
+  [16.0,'rotate(-6deg)'],
+  [22,  'rotate(-6deg)']
+]);
+kf('vs-forer',[
+  [0,'rotate(16deg)'],[5.7,'rotate(6deg)'],[12.3,'rotate(6deg)'],
+  [13.1,'rotate(147deg)'],[15.2,'rotate(144deg)'],[16.0,'rotate(4deg)'],[22,'rotate(4deg)']
+]);
+kf('vs-brows',[[0,'translateY(0px)'],[12.4,'translateY(0px)'],[13.0,'translateY(-6px)'],
+               [14.6,'translateY(-2px)'],[22,'translateY(-2px)']]);
+
+/* idle life: sway, plait, dupatta, blinks */
+swayKF('sway-a',4.4,0,v=>'rotate('+(v*1.5).toFixed(2)+'deg)');
+swayKF('sway-b',4.4,2.2,v=>'rotate('+(v*1.5).toFixed(2)+'deg)');
+swayKF('plait',3.6,0,  v=>'rotate('+(v*4.5).toFixed(2)+'deg)');
+swayKF('veil', 5.0,1.1,v=>'rotate('+(v*3.6).toFixed(2)+'deg) skewX('+(v*2.4).toFixed(2)+'deg)');
+/* blinks: eyes squash shut for ~0.1s at a few moments, never in sync */
+function blinkKF(name,times){
+  const s=[[0,'transform:scaleY(1)','linear']];
+  times.forEach(t=>{ s.push([t-0.09,'transform:scaleY(1)','ease-in'],[t,'transform:scaleY(.08)','ease-out'],
+                            [t+0.1,'transform:scaleY(1)','linear']); });
+  return kf(name,s);
+}
+blinkKF('blink-p',[1.4,4.3,6.9,9.6,13.4,17.2,20.1]);
+kf('none-a',[[0,'opacity:1','linear'],[22,'opacity:1','linear']]);
+blinkKF('blink-v',[2.2,5.4,8.1,11.3,14.2,18.6,21.2]);
+
+kf('phone',[[0,'opacity:1','linear'],[4.35,'opacity:1','ease-in-out'],[4.8,'opacity:0','linear'],[22,'opacity:0']]);
+/* the buzz: a short, tight shake — 0.45s of it, then stillness */
+kf('buzz',(()=>{const s=[[0,'transform:rotate(0deg) translate(0px,0px)','linear'],
+  [2.98,'transform:rotate(0deg) translate(0px,0px)','linear']];
+  for(let k=0;k<=14;k++){const t=3.0+k*0.032, a=(k%2?1:-1)*(3.4*(1-k/15));
+    s.push([t,'transform:rotate('+a.toFixed(2)+'deg) translate('+(a*0.5).toFixed(2)+'px,0px)','linear']);}
+  s.push([3.52,'transform:rotate(0deg) translate(0px,0px)','linear'],[22,'transform:rotate(0deg) translate(0px,0px)','linear']);
+  return s;})());
+
+/* ---------- scene 2: the families ---------- */
+FAM.forEach((f,i)=>{
+  const t0=5.25+i*0.22;
+  kf(f.id+'-shell',[
+    [0,'opacity:0;transform:translateY(40px)','linear'],
+    [t0,'opacity:0;transform:translateY(40px)'],
+    [t0+0.9,'opacity:1;transform:translateY(0px)'],
+    [9.6,'opacity:1;transform:translateY(0px)','ease-in-out'],
+    [10.2,'opacity:0;transform:translateY(0px)','linear'],
+    [22,'opacity:0;transform:translateY(0px)']
+  ]);
+  /* every one of them turns their head to the centre, staggered and eased */
+  const turn = f.cx<540 ? 21 : -21;
+  kf(f.id+'-head',[
+    [0,'rotate(0deg)'],[6.7+i*0.12,'rotate(0deg)'],[7.5+i*0.12,'rotate('+turn+'deg)'],
+    [10,'rotate('+turn+'deg)'],[22,'rotate('+turn+'deg)']
+  ]);
+});
+/* f2 throws both arms up in celebration */
+kf('f2-arml',[[0,'rotate(-6deg)'],[7.7,'rotate(-6deg)'],[8.5,'rotate(-150deg)'],
+              [9.0,'rotate(-142deg)'],[9.9,'rotate(-150deg)'],[22,'rotate(-150deg)']]);
+kf('f2-armr',[[0,'rotate(6deg)'],[7.7,'rotate(6deg)'],[8.5,'rotate(150deg)'],
+              [9.0,'rotate(142deg)'],[9.9,'rotate(150deg)'],[22,'rotate(150deg)']]);
+kf('f2-forel',[[0,'rotate(0deg)'],[7.7,'rotate(0deg)'],[8.5,'rotate(26deg)'],[22,'rotate(26deg)']]);
+kf('f2-forer',[[0,'rotate(0deg)'],[7.7,'rotate(0deg)'],[8.5,'rotate(-26deg)'],[22,'rotate(-26deg)']]);
+/* and a little bounce of joy under him */
+kf('f2-bodyhop',[[0,'translateY(0px)'],[8.5,'translateY(0px)'],[8.8,'translateY(-16px)','ease-out'],
+                 [9.15,'translateY(0px)','ease-in'],[9.3,'translateY(-7px)','ease-out'],
+                 [9.6,'translateY(0px)'],[22,'translateY(0px)']]);
+</script>
+
+<script>
+/* ===================== props, particles, scenery ===================== */
+const rnd=mulberry32(20270124);
+
+/* ---- scene 1: chat bubble with three bouncing dots, and the heart ---- */
+document.getElementById('props').innerHTML = `
+  <g id="bubble" class="an an-bubble">
+    <path d="M 0,0 h 196 a 26,26 0 0 1 26,26 v 96 a 26,26 0 0 1 -26,26 h -126 l -34,30 v -30 h -36
+             a 26,26 0 0 1 -26,-26 v -96 a 26,26 0 0 1 26,-26 z" fill="#fdf3e0"/>
+    <circle class="an an-dot1" cx="62"  cy="74" r="13" fill="#b4707a"/>
+    <circle class="an an-dot2" cx="110" cy="74" r="13" fill="#b4707a"/>
+    <circle class="an an-dot3" cx="158" cy="74" r="13" fill="#b4707a"/>
+  </g>
+  <g id="heart" class="an an-heart">
+    <path d="M 0,8 C -14,-6 -26,-14 -26,-26 C -26,-36 -18,-42 -9,-42 C -3,-42 1,-38 0,-34
+             C -1,-38 3,-42 9,-42 C 18,-42 26,-36 26,-26 C 26,-14 14,-6 0,8 Z" fill="#ef6b7d"/>
+  </g>
+  <g id="seat" class="an an-seat">
+    <ellipse cx="766" cy="1618" rx="196" ry="56" fill="#8e1f2e"/>
+    <ellipse cx="766" cy="1600" rx="184" ry="50" fill="#c42a3c"/>
+    <path d="M 582,1600 a 184,50 0 0 0 368,0" fill="none" stroke="#e8bc56" stroke-width="7"/>
+    <circle cx="700" cy="1582" r="5" fill="#e8bc56" opacity=".9"/>
+    <circle cx="766" cy="1590" r="5" fill="#e8bc56" opacity=".9"/>
+    <circle cx="832" cy="1582" r="5" fill="#e8bc56" opacity=".9"/>
+  </g>
+  </g>`;
+
+
+kf('bubble',[
+  [0,   'opacity:0;transform:translate(676px,802px) scale(.2)','linear'],
+  [1.0, 'opacity:0;transform:translate(676px,802px) scale(.2)','cubic-bezier(.2,1.5,.4,1)'],
+  [1.7, 'opacity:1;transform:translate(676px,802px) scale(1)','linear'],
+  [4.3, 'opacity:1;transform:translate(676px,802px) scale(1)','ease-in-out'],
+  [4.9, 'opacity:0;transform:translate(676px,802px) scale(.86)','linear'],
+  [22,  'opacity:0;transform:translate(676px,802px) scale(.86)']
+]);
+/* three dots, bouncing out of phase — a 0.9s cycle held for the bubble's life */
+[1,2,3].forEach(i=>{
+  const ph=(i-1)*0.3, s=[[0,'transform:translateY(0px)','linear']];
+  for(let t=1.7;t<=4.4;t+=0.15){
+    const v=Math.sin(2*Math.PI*((t-1.7+ph)/0.9));
+    s.push([t,'transform:translateY('+(Math.max(0,v)*-11).toFixed(2)+'px)','ease-in-out']);
+  }
+  s.push([4.5,'transform:translateY(0px)','linear'],[22,'transform:translateY(0px)','linear']);
+  kf('dot'+i,s);
+});
+/* the heart lifts off his phone and drifts off the top of frame */
+kf('heart',[
+  [0,   'opacity:0;transform:translate(322px,1148px) scale(.3)','linear'],
+  [3.55,'opacity:0;transform:translate(322px,1148px) scale(.3)','ease-out'],
+  [4.0, 'opacity:.95;transform:translate(310px,1040px) scale(1)','linear'],
+  [4.8, 'opacity:.85;transform:translate(352px,860px) scale(1.06)','linear'],
+  [5.6, 'opacity:0;transform:translate(300px,648px) scale(1.1)','linear'],
+  [22,  'opacity:0;transform:translate(300px,648px) scale(1.1)']
+]);
+/* the ring appears in his raised hand, with a glint that rotates */
+kf('ringhold',[
+  [0,'opacity:0','linear'],[12.45,'opacity:0','cubic-bezier(.2,1.4,.4,1)'],
+  [12.95,'opacity:1','linear'],[14.95,'opacity:1','ease-in-out'],
+  [15.3,'opacity:0','linear'],[22,'opacity:0']
+]);
+kf('glint',[
+  [0,'opacity:0;transform:rotate(0deg) scale(.4)','linear'],
+  [12.95,'opacity:0;transform:rotate(0deg) scale(.4)','linear'],
+  [13.35,'opacity:1;transform:rotate(150deg) scale(1.15)','linear'],
+  [13.95,'opacity:.5;transform:rotate(290deg) scale(.75)','linear'],
+  [14.45,'opacity:1;transform:rotate(440deg) scale(1.2)','linear'],
+  [15.1,'opacity:0;transform:rotate(570deg) scale(.5)','linear'],
+  [22,'opacity:0;transform:rotate(570deg) scale(.5)']
+]);
+
+kf('seat',[[0,'opacity:1','linear'],[4.4,'opacity:1','ease-in-out'],[4.85,'opacity:0','linear'],[22,'opacity:0']]);
+
+/* ---- scene 2: confetti, one burst from the top, swaying down ---- */
+let conf='';
+for(let i=0;i<78;i++){
+  const x=40+rnd()*1000, sway=30+rnd()*62, dir=rnd()<.5?-1:1;
+  const t0=7.75+rnd()*0.5, dur=2.3+rnd()*1.5;
+  const w=15+rnd()*13, h=10+rnd()*9, spin=(180+rnd()*520)*(rnd()<.5?-1:1);
+  const col=['#f6c85a','#e8556d','#f29b45','#f7e7c2','#c0557f','#5fb6a8'][(rnd()*6)|0];
+  const nm='cf'+i, steps=[[0,'opacity:0;transform:translate('+x+'px,-70px) rotate(0deg)','linear'],
+                          [t0,'opacity:0;transform:translate('+x+'px,-70px) rotate(0deg)','linear']];
+  const N=8;
+  for(let k=0;k<=N;k++){
+    const p=k/N, y=-70+p*2060;
+    const dx=Math.sin(p*Math.PI*2.4)*sway*dir;
+    const op=p<0.08?1:(p>0.8?(1-(p-0.8)/0.2):1);
+    steps.push([t0+dur*p,'opacity:'+op.toFixed(2)+';transform:translate('+(x+dx).toFixed(1)+'px,'+y.toFixed(0)+'px) rotate('+(spin*p).toFixed(0)+'deg)','linear']);
+  }
+  steps.push([Math.min(21.9,t0+dur+0.05),'opacity:0','linear'],[22,'opacity:0','linear']);
+  kf(nm,steps);
+  conf+=`<rect class="an an-${nm}" x="${-w/2}" y="${-h/2}" width="${w}" height="${h}" rx="2" fill="${col}"/>`;
+}
+document.getElementById('confetti').innerHTML=conf;
+
+/* ---- scene 3: a ring of marigold petals expanding outward ---- */
+let pet='';
+for(let i=0;i<44;i++){
+  const a=(i/44)*Math.PI*2+rnd()*0.12, R=300+rnd()*170;
+  const t0=12.5+ (i%6)*0.05 + rnd()*0.14, dur=1.9+rnd()*0.7;
+  const col=['#f2a93b','#e8862c','#f6c45c','#dd6f2a'][(rnd()*4)|0];
+  const rot=(rnd()*360)|0, sp=(rnd()*300-150)|0;
+  kf('pt'+i,[
+    [0,'opacity:0;transform:translate(540px,1255px) rotate('+rot+'deg) scale(0)','linear'],
+    [t0,'opacity:0;transform:translate(540px,1255px) rotate('+rot+'deg) scale(0)','cubic-bezier(.16,.8,.3,1)'],
+    [t0+0.3,'opacity:1;transform:translate('+(540+Math.cos(a)*R*0.35).toFixed(0)+'px,'+(1255+Math.sin(a)*R*0.35).toFixed(0)+'px) rotate('+(rot+sp*0.35)+'deg) scale(1.1)','cubic-bezier(.16,.8,.3,1)'],
+    [t0+dur,'opacity:0;transform:translate('+(540+Math.cos(a)*R).toFixed(0)+'px,'+(1255+Math.sin(a)*R).toFixed(0)+'px) rotate('+(rot+sp)+'deg) scale(.6)','linear'],
+    [22,'opacity:0','linear']
+  ]);
+  pet+=`<ellipse class="an an-pt${i}" cx="0" cy="0" rx="19" ry="12" fill="${col}"/>`;
+}
+document.getElementById('petals').innerHTML=pet;
+
+/* ---- scene 4: the mandap, drawn with stroke-dashoffset ---- */
+const ARCH="M 214,1452 L 214,742 C 214,470 360,360 540,360 C 720,360 866,470 866,742 L 866,1452";
+let strings='';
+{
+ const probe=document.createElementNS('http://www.w3.org/2000/svg','path');
+ probe.setAttribute('d',ARCH);
+ const PL=probe.getTotalLength(), pts=[];
+ for(let k=0;k<=600;k++){ const pt=probe.getPointAtLength(PL*k/600); if(pt.y<738) pts.push(pt); }
+ const lo=Math.round(pts.length*0.12), hi=Math.round(pts.length*0.88);
+ for(let i=0;i<9;i++){
+  const pt=pts[lo+Math.round(i*(hi-lo)/8)], ax=+pt.x.toFixed(1), ay=+pt.y.toFixed(1);
+  const len=92+((i*37)%5)*26;
+  let beads='';
+  for(let b=0;b<Math.round(len/19);b++) beads+=`<circle cx="${ax}" cy="${(ay+24+b*19).toFixed(1)}" r="9.5" fill="${b%2?'#f0a43a':'#e8862c'}"/>`;
+  kf('str'+i, (()=>{ const st=[]; const per=3.4+((i%3)*0.5);
+     for(let t=0;t<=22.3;t+=per/4){ const tt=Math.min(t,22);
+       st.push([tt,'transform:rotate('+(Math.sin(2*Math.PI*((t+i*0.4)/per))*4.5).toFixed(2)+'deg)','ease-in-out']);
+       if(tt>=22) break; } return st; })());
+  strings+=`<g class="an an-str${i}" style="transform-box:view-box;transform-origin:${ax}px ${ay}px">${beads}</g>`;
+ }
+}
+document.getElementById('scene4bg').innerHTML = `
+  <g class="an an-archwrap" id="archwrap">
+    <path id="archpath" class="an an-arch" d="${ARCH}" fill="none"
+          stroke="url(#goldstroke)" stroke-width="13" stroke-linecap="round"/>
+    <path d="${ARCH}" fill="none" stroke="#ffe6ae" stroke-width="3" opacity=".45"
+          class="an an-arch2"/>
+    <g class="an an-strwrap">${strings}</g>
+  </g>`;
+/* measure the real path length so the draw-on is exact */
+const L=Math.ceil(document.getElementById('archpath').getTotalLength());
+document.querySelectorAll('#archwrap path').forEach(p=>{
+  p.style.strokeDasharray=L; p.style.strokeDashoffset=L;
+});
+kf('arch',[
+  [0,'stroke-dashoffset:'+L+'px','linear'],
+  [15.15,'stroke-dashoffset:'+L+'px','cubic-bezier(.3,.05,.2,1)'],
+  [17.45,'stroke-dashoffset:0px','linear'],
+  [22,'stroke-dashoffset:0px']
+]);
+kf('arch2',[
+  [0,'stroke-dashoffset:'+L+'px','linear'],
+  [15.35,'stroke-dashoffset:'+L+'px','cubic-bezier(.3,.05,.2,1)'],
+  [17.7,'stroke-dashoffset:0px','linear'],
+  [22,'stroke-dashoffset:0px']
+]);
+kf('archwrap',[[0,'opacity:0','linear'],[14.9,'opacity:0','ease-in-out'],[15.5,'opacity:1','linear'],[22,'opacity:1']]);
+kf('strwrap',[[0,'opacity:0','linear'],[17.2,'opacity:0','ease-in-out'],[18.4,'opacity:1','linear'],[22,'opacity:1']]);
+
+/* ---- text: rises slowly from below, then stays ---- */
+function riseKF(name,t0){
+  return kf(name,[
+    [0,'opacity:0;transform:translateY(78px)','linear'],
+    [t0,'opacity:0;transform:translateY(78px)','cubic-bezier(.22,.7,.25,1)'],
+    [t0+0.95,'opacity:1;transform:translateY(0px)','linear'],
+    [22,'opacity:1;transform:translateY(0px)']
+  ]);
+}
+riseKF('t-names',15.25);   /* holds 3s  */
+riseKF('t-date', 18.25);   /* holds 2s  */
+riseKF('t-std',  20.25);   /* holds 2s  */
+
+/* ---- the gold light curtains at 5 / 10 / 15 ---- */
+(function(){
+  const s=[[0,'opacity:0;transform:translateY(-2700px)','linear']];
+  [T1,T2,T3].forEach(t=>{
+    s.push([t-0.62,'opacity:0;transform:translateY(-2700px)','cubic-bezier(.4,0,.25,1)']);
+    s.push([t-0.30,'opacity:1;transform:translateY(-1500px)','linear']);
+    s.push([t,     'opacity:1;transform:translateY(-640px)','linear']);
+    s.push([t+0.34,'opacity:1;transform:translateY(300px)','cubic-bezier(.4,0,.25,1)']);
+    s.push([t+0.66,'opacity:0;transform:translateY(1500px)','linear']);
+    s.push([t+0.67,'opacity:0;transform:translateY(-2700px)','linear']);
+  });
+  s.push([22,'opacity:0;transform:translateY(-2700px)','linear']);
+  kf('wipe',s);
+})();
+
+/* soft bokeh lanterns drifting behind everything */
+let bk='';
+for(let i=0;i<16;i++){
+  const x=40+rnd()*1000, y=140+rnd()*760, r=14+rnd()*40, o=(0.05+rnd()*0.09).toFixed(3);
+  const per=6+rnd()*5, amp=14+rnd()*26;
+  kf('bk'+i,(()=>{const s=[];for(let t=0;t<=22.3;t+=per/4){const tt=Math.min(t,22);
+    s.push([tt,'transform:translateY('+(Math.sin(2*Math.PI*((t+i)/per))*amp).toFixed(1)+'px)','ease-in-out']);
+    if(tt>=22)break;}return s;})());
+  bk+=`<circle class="an an-bk${i}" cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${r.toFixed(0)}" fill="#ffd9a0" opacity="${o}"/>`;
+}
+document.getElementById('bokeh').innerHTML=bk;
+
+/* ===================== wire names → elements ===================== */
+const MAP={
+  'an-pos-prem':'pos-prem','an-pos-vasu':'pos-vasu',
+  'an-pm-body':'pm-body','an-pm-torso':'pm-torso','an-pm-head':'pm-head',
+  'an-pm-legl':'pm-legl','an-pm-shinl':'pm-shinl','an-pm-legr':'pm-legr','an-pm-shinr':'pm-shinr',
+  'an-pm-arml':'pm-arml','an-pm-forel':'pm-forel','an-pm-armr':'pm-armr','an-pm-forer':'pm-forer',
+  'an-pm-brows':'pm-brows','an-pm-eyes':'blink-p','an-pm-plait':'plait','an-pm-dupatta':'veil',
+  'an-vs-body':'vs-body','an-pm-shell':'none-a','an-vs-shell':'none-a','an-vs-torso':'vs-torso','an-vs-head':'vs-head',
+  'an-vs-legl':'vs-legl','an-vs-shinl':'vs-shinl','an-vs-legr':'vs-legr','an-vs-shinr':'vs-shinr',
+  'an-vs-arml':'vs-arml','an-vs-forel':'vs-forel','an-vs-armr':'vs-armr','an-vs-forer':'vs-forer',
+  'an-vs-brows':'vs-brows','an-vs-eyes':'blink-v','an-vs-plait':'plait','an-vs-dupatta':'veil',
+  'an-seat':'seat','an-phone':'phone','an-bubble':'bubble','an-dot1':'dot1','an-dot2':'dot2','an-dot3':'dot3',
+  'an-heart':'heart','an-ringhold':'ringhold','an-glint':'glint','an-wipe':'wipe',
+  'an-arch':'arch','an-arch2':'arch2','an-archwrap':'archwrap','an-strwrap':'strwrap'
+};
+FAM.forEach(f=>{
+  MAP['an-'+f.id+'-shell']=f.id+'-shell';
+  MAP['an-'+f.id+'-head']=f.id+'-head';
+  MAP['an-'+f.id+'-torso']='sway-a';
+  MAP['an-'+f.id+'-eyes']='blink-p';
+});
+['arml','armr','forel','forer'].forEach(k=>{ MAP['an-f2-'+k]='f2-'+k; });
+for(let i=0;i<78;i++) MAP['an-cf'+i]='cf'+i;
+for(let i=0;i<44;i++) MAP['an-pt'+i]='pt'+i;
+for(let i=0;i<9;i++)  MAP['an-str'+i]='str'+i;
+for(let i=0;i<16;i++) MAP['an-bk'+i]='bk'+i;
+MAP['an-t-names']='t-names'; MAP['an-t-date']='t-date'; MAP['an-t-std']='t-std';
+
+/* torso sway for the leads sits on the body group of the simple cast and on
+   dedicated wrappers for the leads, so it never fights a pose keyframe */
+Object.keys(MAP).forEach(cls=>{ CSS+='.'+cls+'{animation-name:'+MAP[cls]+'}'; });
+/* the celebrating uncle gets a hop layered on his position group */
+MAP['an-f2-body']='f2-bodyhop';
+/* ids used directly by the wipe + text */
+document.getElementById('wipe').classList.add('an-wipe');
+document.getElementById('t-names').classList.add('an-t-names');
+document.getElementById('t-date').classList.add('an-t-date');
+document.getElementById('t-std').classList.add('an-t-std');
+
+const st=document.createElement('style'); st.textContent=CSS; document.head.appendChild(st);
+
+/* ===================== film grain ===================== */
+const GT=14,GS=200,gurl=[];
+for(let i=0;i<GT;i++){
+  const c=document.createElement('canvas'); c.width=c.height=GS;
+  const x=c.getContext('2d'), im=x.createImageData(GS,GS), r=mulberry32(99173+i*7919);
+  for(let p=0;p<im.data.length;p+=4){ const v=118+(r()-0.5)*140;
+    im.data[p]=im.data[p+1]=im.data[p+2]=v; im.data[p+3]=255; }
+  x.putImageData(im,0,0); gurl.push(c.toDataURL('image/png'));
+}
+const grainEl=document.getElementById('grain');
+
+/* ===================== the frame driver ===================== */
+function setFrame(f){
+  f=Math.max(0,Math.min(TOTAL-1,f));
+  document.documentElement.style.setProperty('--t', (-f/FPS)+'s');
+  const g=mulberry32(f*40503+17);
+  grainEl.style.backgroundImage='url('+gurl[f%GT]+')';
+  grainEl.style.backgroundPosition=((g()*GS)|0)+'px '+((g()*GS)|0)+'px';
+  document.documentElement.dataset.frame=String(f);
+}
+window.setFrame=setFrame; window.TOTAL_FRAMES=TOTAL; window.__ready=true;
+setFrame(0);
+</script>
+</body>
+</html>

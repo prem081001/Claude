@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Prem &amp; Vasudha — Save The Date</title>
+<style>
+  /* ============================================================
+     9:16 WEDDING TRAILER — 1080x1920 · 15s · 30fps · 450 frames
+     Deterministic: every pixel is a pure function of FRAME.
+     Driven by window.setFrame(n). No clocks, no CSS animation.
+     ============================================================ */
+
+  :root{
+    --W: 1080px;
+    --H: 1920px;
+    /* 12% safe margin so WhatsApp's UI never covers text */
+    --safe-x: 129.6px;   /* 12% of 1080 */
+    --safe-y: 230.4px;   /* 12% of 1920 */
+    --ink: #f6f1e9;      /* warm off-white, never pure #fff for text */
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+
+  html,body{
+    width:var(--W); height:var(--H);
+    background:#000; overflow:hidden;
+  }
+
+  body{
+    font-family:'Inter Display','Inter',sans-serif;
+    font-feature-settings:"ss01" 1,"cv05" 1;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:geometricPrecision;
+  }
+
+  /* #stage carries the global fade-to-black and the film gate weave */
+  #stage{
+    position:absolute; inset:0;
+    width:var(--W); height:var(--H);
+    background:#000;
+    transform-origin:50% 50%;
+    will-change:transform,opacity;
+  }
+
+  /* ---------- scene layers (all stacked, opacity-switched) ---------- */
+  .layer{
+    position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    opacity:0;
+    will-change:opacity;
+  }
+
+  /* ---------- type ---------- */
+  .line{
+    position:relative;
+    color:var(--ink);
+    text-transform:uppercase;
+    text-align:center;
+    white-space:nowrap;
+    transform-origin:50% 50%;
+    will-change:transform,opacity,letter-spacing;
+  }
+
+  /* small, wide-tracked trailer card type */
+  .tag{
+    font-weight:500;
+    font-size:46px;
+    letter-spacing:0.46em;
+    padding-left:0.46em;        /* re-centre: letter-spacing adds a trailing gap */
+    line-height:1.2;
+  }
+
+  /* the stamped mid-size slabs */
+  .stamp{
+    font-weight:800;
+    font-size:86px;
+    letter-spacing:0.055em;
+    padding-left:0.055em;
+    line-height:1.10;
+  }
+  .flash-card .stamp{ font-size:92px; }
+
+  /* heavy "condensed" caps — no condensed face is installed, so we
+     squeeze Inter Black horizontally, which is deterministic and offline */
+  .condensed{
+    font-family:'Inter Display Black','Inter Black','Inter Display','Inter',sans-serif;
+    font-weight:900;
+  }
+
+  /* ---------- 0-4s : black-card intertitles ---------- */
+  #card-1,#card-2,#card-3{ background:#000; }
+
+  /* ---------- 4-6s : letterbox + photo plate ---------- */
+  #seq-photo{ background:#000; }
+
+  /* 2.39:1 inside the 9:16 frame → 1080 / 2.39 = 451.9px of picture */
+  #photo-window{
+    position:absolute; left:0; right:0;
+    top:734px;            /* (1920 - 451.9) / 2 */
+    height:452px;
+    overflow:hidden;
+    background:#000;
+  }
+
+  /* ===========================================================
+     SWAP THIS DIV FOR YOUR PHOTO.
+     Drop in:  <img src="photo.jpg" id="photo-1">  — or keep the div
+     and add:  background-image:url('photo.jpg');
+     Keep background-size:cover and the Ken Burns transform is applied
+     to this element by JS, so any image inherits the slow push.
+     =========================================================== */
+  #photo-1{
+    position:absolute; inset:-2px;
+    background:
+      radial-gradient(52% 96% at 30% 24%, rgba(255,226,170,.92) 0%, rgba(226,150,78,.55) 38%, rgba(0,0,0,0) 72%),
+      radial-gradient(70% 130% at 86% 96%, rgba(58,20,12,.88) 0%, rgba(0,0,0,0) 60%),
+      linear-gradient(116deg,#4a1d0d 0%,#9c4f20 26%,#d9913f 52%,#7a3414 78%,#2a0f07 100%);
+    background-size:cover;
+    background-position:center;
+    transform-origin:50% 46%;
+    will-change:transform;
+  }
+
+  /* soft warm bloom + a faint anamorphic streak over the plate */
+  #photo-window::after{
+    content:"";
+    position:absolute; inset:0;
+    background:
+      radial-gradient(60% 160% at 24% 18%, rgba(255,226,178,.34), rgba(0,0,0,0) 62%),
+      linear-gradient(180deg, rgba(0,0,0,.26), rgba(0,0,0,0) 28%, rgba(0,0,0,0) 72%, rgba(0,0,0,.34));
+    pointer-events:none;
+  }
+
+  /* the bars slide in from top and bottom */
+  .bar{
+    position:absolute; left:0; width:var(--W);
+    height:736px;
+    background:#000;
+    will-change:transform;
+    z-index:3;
+  }
+  #bar-top{ top:0; }
+  #bar-bot{ bottom:0; }
+
+  /* ---------- 6-8s : three flash cuts ---------- */
+  .flash-card{
+    position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    opacity:0;
+  }
+  #flash-1{ background:linear-gradient(142deg,#0d2b2e 0%,#17555a 46%,#0a1f22 100%); }
+  #flash-2{ background:linear-gradient(142deg,#3c0c18 0%,#8e2235 48%,#2a0710 100%); }
+  #flash-3{ background:linear-gradient(142deg,#4a3108 0%,#c8923a 44%,#2e1d05 100%); }
+
+  .flash-card .stamp{
+    /* a touch of weight + a hard drop so the words land on the beat */
+    text-shadow:0 10px 40px rgba(0,0,0,.55);
+  }
+
+  /* ---------- 8-11s : the names ---------- */
+  #seq-names{ background:#000; flex-direction:column; }
+  #seq-names .nm{
+    opacity:0;
+    font-weight:800;
+    font-size:132px;
+    letter-spacing:0.14em;
+    padding-left:0.14em;
+    color:var(--ink);
+    text-transform:uppercase;
+    transform-origin:50% 50%;
+    will-change:opacity,transform;
+  }
+  #nm-amp{
+    font-size:66px;
+    font-weight:400;
+    letter-spacing:0;
+    padding-left:0;
+    margin:38px 0;
+    color:#d8c49a;          /* warm gold so the ampersand reads as a breath */
+  }
+
+  /* ---------- 11-15s : title card ---------- */
+  #seq-date{ background:#000; flex-direction:column; }
+
+  #date-plate{
+    position:relative;
+    padding:52px 0 58px;
+    width:calc(var(--W) - (2 * var(--safe-x)));
+    border-top:13px solid var(--ink);
+    border-bottom:13px solid var(--ink);
+    transform-origin:50% 50%;
+    will-change:transform,opacity;
+  }
+  #date-plate .dateline{
+    display:block;
+    font-size:140px;
+    line-height:.94;
+    letter-spacing:0.02em;
+    color:var(--ink);
+    text-transform:uppercase;
+    white-space:nowrap;
+    transform:scaleX(.82);     /* the condensed squeeze */
+    transform-origin:50% 50%;
+  }
+  #save-the-date{
+    margin-top:54px;
+    opacity:0;
+    font-size:38px;
+    font-weight:500;
+    letter-spacing:0.62em;
+    padding-left:0.62em;
+    color:#e6dcc9;
+    text-transform:uppercase;
+    white-space:nowrap;
+    will-change:opacity,transform;
+  }
+
+  /* ---------- full-frame white impact flash ---------- */
+  #impact{
+    position:absolute; inset:0;
+    background:#fff; opacity:0;
+    z-index:40; pointer-events:none;
+    will-change:opacity;
+  }
+
+  /* ---------- grain + vignette, over everything, all 15s ---------- */
+  #grain{
+    position:absolute; inset:-80px;       /* oversized: it gets jittered */
+    z-index:50; pointer-events:none;
+    background-repeat:repeat;
+    mix-blend-mode:overlay;
+    opacity:.085;
+    will-change:background-position,opacity;
+  }
+  #vignette{
+    position:absolute; inset:0;
+    z-index:51; pointer-events:none;
+    background:
+      radial-gradient(118% 78% at 50% 50%, rgba(0,0,0,0) 38%, rgba(0,0,0,.30) 72%, rgba(0,0,0,.62) 100%),
+      linear-gradient(180deg, rgba(0,0,0,.22), rgba(0,0,0,0) 18%, rgba(0,0,0,0) 82%, rgba(0,0,0,.26));
+  }
+</style>
+</head>
+<body>
+
+<div id="stage">
+
+  <!-- 0-2s -->
+  <div class="layer" id="card-1"><div class="line tag">THIS JANUARY</div></div>
+  <!-- 2-3s -->
+  <div class="layer" id="card-2"><div class="line stamp" id="l2">A STORY<br>THAT WAITED</div></div>
+  <!-- 3-4s -->
+  <div class="layer" id="card-3"><div class="line stamp" id="l3">FOR THE RIGHT<br>PERSON</div></div>
+
+  <!-- 4-6s : letterbox + Ken Burns photo plate -->
+  <div class="layer" id="seq-photo">
+    <div id="photo-window">
+      <div id="photo-1"></div>
+    </div>
+    <div class="bar" id="bar-top"></div>
+    <div class="bar" id="bar-bot"></div>
+  </div>
+
+  <!-- 6-8s : three flash cuts -->
+  <div class="layer" id="seq-flash">
+    <div class="flash-card" id="flash-1"><div class="line stamp" id="f1">TWO<br>FAMILIES</div></div>
+    <div class="flash-card" id="flash-2"><div class="line stamp" id="f2">ONE<br>CELEBRATION</div></div>
+    <div class="flash-card" id="flash-3"><div class="line stamp" id="f3">ONE<br>DATE</div></div>
+  </div>
+
+  <!-- 8-11s : the names -->
+  <div class="layer" id="seq-names">
+    <div class="nm" id="nm-prem">PREM</div>
+    <div class="nm" id="nm-amp">&amp;</div>
+    <div class="nm" id="nm-vas">VASUDHA</div>
+  </div>
+
+  <!-- 11-15s : title card -->
+  <div class="layer" id="seq-date">
+    <div id="date-plate"><span class="dateline condensed">24 . 01 . 2027</span></div>
+    <div id="save-the-date">SAVE THE DATE</div>
+  </div>
+
+  <div id="impact"></div>
+  <div id="grain"></div>
+  <div id="vignette"></div>
+</div>
+
+<script>
+/* =================================================================
+   DETERMINISTIC TIMELINE
+   Frame-indexed only. setFrame(f) fully re-renders the DOM state.
+   ================================================================= */
+const FPS = 30, DUR = 15, TOTAL = FPS * DUR;   // 450 frames
+
+/* ---- easing ---- */
+const clamp  = (v,a=0,b=1)=> v<a?a:(v>b?b:v);
+const outCubic = t => 1 - Math.pow(1-t, 3);
+const outQuint = t => 1 - Math.pow(1-t, 5);
+const inOutSine = t => -(Math.cos(Math.PI*t)-1)/2;
+
+/* ramp(f, from, to, ease) → 0..1 across a frame window */
+function ramp(f, a, b, ease){
+  if (b <= a) return f >= b ? 1 : 0;
+  const t = clamp((f - a) / (b - a));
+  return ease ? ease(t) : t;
+}
+const lerp = (a,b,t)=> a + (b-a)*t;
+
+/* ---- seeded PRNG so the grain is identical on every run ---- */
+function mulberry32(a){
+  return function(){
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+/* ---- pre-render N grain tiles once; cycle them per frame ---- */
+const GRAIN_TILES = 14, GRAIN_SIZE = 220;
+const grainURLs = [];
+(function buildGrain(){
+  for (let i = 0; i < GRAIN_TILES; i++){
+    const c = document.createElement('canvas');
+    c.width = c.height = GRAIN_SIZE;
+    const ctx = c.getContext('2d');
+    const img = ctx.createImageData(GRAIN_SIZE, GRAIN_SIZE);
+    const rnd = mulberry32(0x9E3779B9 + i * 7919);
+    for (let p = 0; p < img.data.length; p += 4){
+      // monochrome speckle around mid-grey; overlay blend keeps it subtle
+      const v = 118 + (rnd() - 0.5) * 150;
+      img.data[p] = img.data[p+1] = img.data[p+2] = v;
+      img.data[p+3] = 255;
+    }
+    ctx.putImageData(img, 0, 0);
+    grainURLs.push(c.toDataURL('image/png'));
+  }
+})();
+
+const $ = id => document.getElementById(id);
+const E = {
+  stage:$('stage'), grain:$('grain'), impact:$('impact'),
+  c1:$('card-1'), c2:$('card-2'), c3:$('card-3'),
+  t1:document.querySelector('#card-1 .tag'), l2:$('l2'), l3:$('l3'),
+  photo:$('seq-photo'), ph1:$('photo-1'), barT:$('bar-top'), barB:$('bar-bot'),
+  flash:$('seq-flash'),
+  fc:[$('flash-1'),$('flash-2'),$('flash-3')],
+  ft:[$('f1'),$('f2'),$('f3')],
+  names:$('seq-names'), prem:$('nm-prem'), amp:$('nm-amp'), vas:$('nm-vas'),
+  date:$('seq-date'), plate:$('date-plate'), std:$('save-the-date')
+};
+
+/* a stamp lands hard: full opacity instantly, then a 4-frame settle
+   from slightly-too-big + slightly-too-wide down onto its mark */
+function stamp(el, f, start, baseLS){
+  if (f < start){ el.style.opacity = 0; return; }
+  const t  = ramp(f, start, start + 4, outQuint);
+  const sc = lerp(1.060, 1, t);
+  const ls = lerp(baseLS + 0.075, baseLS, t);
+  el.style.opacity = 1;
+  el.style.transform = 'scale(' + sc.toFixed(4) + ')';
+  el.style.letterSpacing = ls.toFixed(4) + 'em';
+  el.style.paddingLeft   = ls.toFixed(4) + 'em';
+}
+
+function setFrame(f){
+  f = clamp(f, 0, TOTAL - 1);
+
+  /* ---- reset every layer each frame: no state leaks between frames ---- */
+  [E.c1,E.c2,E.c3,E.photo,E.flash,E.names,E.date].forEach(l => l.style.opacity = 0);
+  E.fc.forEach(c => c.style.opacity = 0);
+  E.impact.style.opacity = 0;
+
+  /* =========================================================
+     0 – 60   (0.0–2.0s)   black, then "THIS JANUARY" fades up
+     ========================================================= */
+  if (f < 60){
+    E.c1.style.opacity = 1;
+    // 18 frames of pure black first, then a slow 15-frame fade up
+    const a = ramp(f, 18, 33, outCubic);
+    E.t1.style.opacity = a;
+    // the faintest drift up as it arrives, then dead still
+    E.t1.style.transform = 'translateY(' + lerp(10, 0, a).toFixed(2) + 'px)';
+  }
+
+  /* =========================================================
+     60 – 90  (2.0–3.0s)   HARD CUT. "A STORY THAT WAITED"
+     ========================================================= */
+  else if (f < 90){
+    E.c2.style.opacity = 1;
+    stamp(E.l2, f, 62, 0.055);          // 2 black frames, then it slams on
+  }
+
+  /* =========================================================
+     90 – 120 (3.0–4.0s)   HARD CUT. "FOR THE RIGHT PERSON"
+     ========================================================= */
+  else if (f < 120){
+    E.c3.style.opacity = 1;
+    stamp(E.l3, f, 92, 0.055);
+  }
+
+  /* =========================================================
+     120 – 180 (4.0–6.0s)  letterbox bars slide in, Ken Burns push
+     ========================================================= */
+  else if (f < 180){
+    E.photo.style.opacity = 1;
+
+    // bars travel in from off-frame over 12 frames (0.4s)
+    const bt = ramp(f, 120, 132, outCubic);
+    const off = lerp(736, 0, bt);                       // bar height
+    E.barT.style.transform = 'translateY(' + (-off).toFixed(2) + 'px)';
+    E.barB.style.transform = 'translateY(' + ( off).toFixed(2) + 'px)';
+
+    // slow push: 1.00 → 1.13 with a gentle rightward drift, whole 2s
+    const k = ramp(f, 120, 180, inOutSine);
+    const sc = lerp(1.00, 1.13, k);
+    const tx = lerp(0, -26, k);
+    const ty = lerp(0,  -9, k);
+    E.ph1.style.transform =
+      'translate(' + tx.toFixed(2) + 'px,' + ty.toFixed(2) + 'px) scale(' + sc.toFixed(4) + ')';
+  }
+
+  /* =========================================================
+     180 – 240 (6.0–8.0s)  three fast flash cuts, 20 frames each
+     ========================================================= */
+  else if (f < 240){
+    E.flash.style.opacity = 1;
+    const idx   = Math.min(2, Math.floor((f - 180) / 20));
+    const start = 180 + idx * 20;
+    const local = f - start;
+
+    E.fc[idx].style.opacity = 1;
+    // 2-frame white blow-out on the cut, then the word stamps
+    if (local < 2) E.impact.style.opacity = local === 0 ? 0.92 : 0.38;
+    stamp(E.ft[idx], f, start + 1, 0.055);
+  }
+
+  /* =========================================================
+     240 – 330 (8.0–11.0s) black. PREM · & · VASUDHA
+                           0.4s (12 frame) pause between each
+     ========================================================= */
+  else if (f < 330){
+    E.names.style.opacity = 1;
+    const ins = [240, 266, 288];        // 14f fade, 12f pause, 14f fade...
+    const els = [E.prem, E.amp, E.vas];
+    const lss = [0.14, 0, 0.14];
+    els.forEach((el, i) => {
+      const a = ramp(f, ins[i], ins[i] + 14, outCubic);
+      el.style.opacity = a;
+      // names breathe open from slightly tight; the ampersand just fades
+      const ls = i === 1 ? 0 : lerp(0.085, lss[i], a);
+      el.style.letterSpacing = ls.toFixed(4) + 'em';
+      el.style.paddingLeft   = ls.toFixed(4) + 'em';
+      el.style.transform = 'scale(' + lerp(0.985, 1, a).toFixed(4) + ')';
+    });
+  }
+
+  /* =========================================================
+     330 – 450 (11.0–15.0s) title card SLAMS in, then SAVE THE DATE,
+                            then a slow fade to black
+     ========================================================= */
+  else {
+    E.date.style.opacity = 1;
+
+    // 2 black frames after the cut, then the plate hits on frame 332
+    if (f < 332){
+      E.plate.style.opacity = 0;
+      E.std.style.opacity = 0;
+    } else {
+      const t = ramp(f, 332, 338, outQuint);        // 6-frame slam
+      E.plate.style.opacity = 1;
+      E.plate.style.transform = 'scale(' + lerp(1.12, 1, t).toFixed(4) + ')';
+      if (f < 334) E.impact.style.opacity = f === 332 ? 0.80 : 0.26;
+
+      // 13.0s: SAVE THE DATE arrives under it, tracking out as it fades up
+      const s = ramp(f, 390, 400, outCubic);
+      E.std.style.opacity = s;
+      const ls = lerp(0.40, 0.62, s);
+      E.std.style.letterSpacing = ls.toFixed(4) + 'em';
+      E.std.style.paddingLeft   = ls.toFixed(4) + 'em';
+    }
+  }
+
+  /* ---- global slow fade to black: 13.6s → 15.0s ---- */
+  const fade = 1 - ramp(f, 408, 449, inOutSine);
+
+  /* ---- film gate weave: a sub-pixel deterministic jitter all the way through,
+          plus a hair of scale so the jitter never exposes an edge ---- */
+  const jr = mulberry32(f * 2654435761 >>> 0);
+  const jx = (jr() - 0.5) * 1.3, jy = (jr() - 0.5) * 1.3;
+  E.stage.style.opacity = fade.toFixed(4);
+  E.stage.style.transform =
+    'translate(' + jx.toFixed(3) + 'px,' + jy.toFixed(3) + 'px) scale(1.0035)';
+
+  /* ---- grain: swap tile + shift offset every frame so it never crawls ---- */
+  const g = mulberry32(f * 40503 + 17);
+  E.grain.style.backgroundImage = 'url(' + grainURLs[f % GRAIN_TILES] + ')';
+  E.grain.style.backgroundPosition =
+    Math.floor(g() * GRAIN_SIZE) + 'px ' + Math.floor(g() * GRAIN_SIZE) + 'px';
+  // grain lifts slightly on the bright flash frames, like real stock
+  E.grain.style.opacity = (0.075 + 0.03 * (f % 3 === 0 ? 1 : 0.4)).toFixed(4);
+
+  document.documentElement.dataset.frame = String(f);
+}
+
+window.setFrame = setFrame;
+window.TOTAL_FRAMES = TOTAL;
+window.__ready = true;
+setFrame(0);
+</script>
+</body>
+</html>

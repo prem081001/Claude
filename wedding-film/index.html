@@ -47,6 +47,9 @@
   .arm-r      { transform-box:view-box; transform-origin:30px -238px; }
   .fore-l     { transform-box:view-box; transform-origin:-30px -190px; }
   .fore-r     { transform-box:view-box; transform-origin:30px -190px; }
+  .turn       { transform-box:view-box; transform-origin:0px -292px; }
+  .faceg      { transform-box:view-box; transform-origin:0px -292px; }
+  .bodyturn   { transform-box:view-box; transform-origin:0px -200px; }
   .eyes       { transform-box:view-box; transform-origin:0px -296px; }
   .brows      { transform-box:view-box; transform-origin:0px -308px; }
   .plait      { transform-box:view-box; transform-origin:-30px -270px; }
@@ -143,6 +146,7 @@
 
 <script>
 /* ===================== timeline core ===================== */
+const LIGHT=false;          /* true = ivory backdrop, as in the reference sheets */
 const FPS=30, DUR=22, TOTAL=FPS*DUR;           // 660 frames
 const EASE='cubic-bezier(.45,.05,.2,1)';       // the house ease: soft in, soft out
 const SWING='cubic-bezier(.34,.1,.3,1)';
@@ -196,7 +200,7 @@ function motif(x,y,c,sc){ sc=sc||1; return `<g transform="translate(${x},${y}) s
   <path d="M 0,4 C 2.6,4 2.6,0 0,0 C -2.6,0 -2.6,4 0,4 Z" fill="${c}"/></g>`; }
 
 function face(id,o){
-  return `
+  return `<g class="faceg an an-${id}-face">
     <ellipse cx="-24" cy="-285" rx="8" ry="5" fill="${o.blush}" opacity=".6"/>
     <ellipse cx="24"  cy="-285" rx="8" ry="5" fill="${o.blush}" opacity=".6"/>
     <g class="brows an an-${id}-brows">
@@ -208,7 +212,7 @@ function face(id,o){
       <ellipse cx="13"  cy="-296" rx="4.2" ry="5" fill="${INK}"/>
     </g>
     <path d="M -1,-291 Q 2,-286 -1,-284" stroke="${INK}" stroke-width="1.9" fill="none" stroke-linecap="round" opacity=".75"/>
-    <path d="M -7,-277 Q 0,-271 7,-277" stroke="${INK}" stroke-width="2.3" fill="none" stroke-linecap="round"/>`;
+    <path d="M -7,-277 Q 0,-271 7,-277" stroke="${INK}" stroke-width="2.3" fill="none" stroke-linecap="round"/></g>`;
 }
 function arm(id,side,o){
   const sx = side==='l' ? -30 : 30;
@@ -316,12 +320,15 @@ function makeChar(id,o){
     <g class="body an an-${id}-body">
       ${leg(id,'l',o)}
       ${leg(id,'r',o)}
+      <g class="bodyturn an an-${id}-bturn">
       <g class="torso an an-${id}-torso">
         ${o.kind==='lehenga' ? lehenga : ''}
         ${torsoInner}
         ${o.kind==='sherwani' ? stole : ''}
       </g>
+      </g>
       <g class="head an an-${id}-head">
+        <g class="turn an an-${id}-turn">
         <path d="M -8,-260 Q 0,-256 8,-260 L 8,-246 Q 0,-240 -8,-246 Z" ${K(o.skin)}/>
         <circle cx="0" cy="-292" r="38" ${K(o.skin)}/>
         ${face(id,o)}
@@ -329,6 +336,7 @@ function makeChar(id,o){
         ${o.kind==='sherwani' ? safa : ''}
         ${o.kind==='simple'   ? (o.hatSimple||'') : ''}
         ${o.kind==='lehenga'  ? veilHead : ''}
+        </g>
       </g>
       ${arm(id,'l',o)}
       ${arm(id,'r',o)}
@@ -565,6 +573,45 @@ kf('buzz',(()=>{const s=[[0,'transform:rotate(0deg) translate(0px,0px)','linear'
   s.push([3.52,'transform:rotate(0deg) translate(0px,0px)','linear'],[22,'transform:rotate(0deg) translate(0px,0px)','linear']);
   return s;})());
 
+
+/* ---------- three-quarter turns, from the reference pose sheet ---------- */
+kf('pm-turn',[
+  [0,'scaleX(.93)'],[3.6,'scaleX(.93)'],[4.3,'scaleX(.90)'],
+  [6.6,'scaleX(.90)'],[7.4,'scaleX(.88)'],
+  [10.4,'scaleX(.88)'],[11.6,'scaleX(.86)'],      /* turns to her for the proposal */
+  [15.3,'scaleX(.86)'],[16.2,'scaleX(.95)'],      /* opens out to camera */
+  [22,'scaleX(.95)']
+]);
+kf('pm-face',[
+  [0,'translateX(4px)'],[3.6,'translateX(4px)'],[4.3,'translateX(7px)'],
+  [6.6,'translateX(7px)'],[7.4,'translateX(10px)'],
+  [10.4,'translateX(10px)'],[11.6,'translateX(12px)'],
+  [15.3,'translateX(12px)'],[16.2,'translateX(3px)'],
+  [22,'translateX(3px)']
+]);
+kf('pm-bturn',[
+  [0,'scaleX(.97)'],[7.4,'scaleX(.95)'],[11.6,'scaleX(.93)'],
+  [16.2,'scaleX(.99)'],[22,'scaleX(.99)']
+]);
+kf('vs-turn',[
+  [0,'scaleX(.92)'],[5.4,'scaleX(.92)'],[7.4,'scaleX(.88)'],
+  [10.4,'scaleX(.88)'],[12.2,'scaleX(.86)'],
+  [15.3,'scaleX(.86)'],[16.2,'scaleX(.95)'],
+  [22,'scaleX(.95)']
+]);
+kf('vs-face',[
+  [0,'translateX(-6px)'],[5.4,'translateX(-6px)'],[7.4,'translateX(-10px)'],
+  [10.4,'translateX(-10px)'],[12.2,'translateX(-12px)'],
+  [15.3,'translateX(-12px)'],[16.2,'translateX(-3px)'],
+  [22,'translateX(-3px)']
+]);
+kf('vs-bturn',[
+  [0,'scaleX(.97)'],[7.4,'scaleX(.95)'],[12.2,'scaleX(.93)'],
+  [16.2,'scaleX(.99)'],[22,'scaleX(.99)']
+]);
+kf('turn-none',[[0,'scaleX(1)'],[22,'scaleX(1)']]);
+kf('face-none',[[0,'translateX(0px)'],[22,'translateX(0px)']]);
+
 /* ---------- scene 2: the families ---------- */
 FAM.forEach((f,i)=>{
   const t0=5.25+i*0.22;
@@ -799,11 +846,11 @@ document.getElementById('bokeh').innerHTML=bk;
 /* ===================== wire names → elements ===================== */
 const MAP={
   'an-pos-prem':'pos-prem','an-pos-vasu':'pos-vasu',
-  'an-pm-body':'pm-body','an-pm-torso':'pm-torso','an-pm-head':'pm-head',
+  'an-pm-body':'pm-body','an-pm-turn':'pm-turn','an-pm-face':'pm-face','an-pm-bturn':'pm-bturn','an-pm-torso':'pm-torso','an-pm-head':'pm-head',
   'an-pm-legl':'pm-legl','an-pm-shinl':'pm-shinl','an-pm-legr':'pm-legr','an-pm-shinr':'pm-shinr',
   'an-pm-arml':'pm-arml','an-pm-forel':'pm-forel','an-pm-armr':'pm-armr','an-pm-forer':'pm-forer',
   'an-pm-brows':'pm-brows','an-pm-eyes':'blink-p','an-pm-plait':'plait','an-pm-dupatta':'veil',
-  'an-vs-body':'vs-body','an-pm-shell':'none-a','an-vs-shell':'none-a','an-vs-torso':'vs-torso','an-vs-head':'vs-head',
+  'an-vs-body':'vs-body','an-vs-turn':'vs-turn','an-vs-face':'vs-face','an-vs-bturn':'vs-bturn','an-pm-shell':'none-a','an-vs-shell':'none-a','an-vs-torso':'vs-torso','an-vs-head':'vs-head',
   'an-vs-legl':'vs-legl','an-vs-shinl':'vs-shinl','an-vs-legr':'vs-legr','an-vs-shinr':'vs-shinr',
   'an-vs-arml':'vs-arml','an-vs-forel':'vs-forel','an-vs-armr':'vs-armr','an-vs-forer':'vs-forer',
   'an-vs-brows':'vs-brows','an-vs-eyes':'blink-v','an-vs-plait':'plait','an-vs-dupatta':'veil',
@@ -812,6 +859,9 @@ const MAP={
   'an-arch':'arch','an-arch2':'arch2','an-archwrap':'archwrap','an-strwrap':'strwrap'
 };
 FAM.forEach(f=>{
+  MAP['an-'+f.id+'-turn']='turn-none';
+  MAP['an-'+f.id+'-bturn']='turn-none';
+  MAP['an-'+f.id+'-face']='face-none';
   MAP['an-'+f.id+'-shell']=f.id+'-shell';
   MAP['an-'+f.id+'-head']=f.id+'-head';
   MAP['an-'+f.id+'-torso']='sway-a';
@@ -836,6 +886,30 @@ document.getElementById('t-date').classList.add('an-t-date');
 document.getElementById('t-std').classList.add('an-t-std');
 
 const st=document.createElement('style'); st.textContent=CSS; document.head.appendChild(st);
+
+/* ===================== backdrop palette ===================== */
+if(LIGHT){
+  const set=(id,stops)=>{const g=document.getElementById(id);
+    [...g.children].forEach((c,i)=>{ if(stops[i]) c.setAttribute('stop-color',stops[i]); });};
+  set('sky',  ['#f8f1e6','#f4e8d6','#efdcc0','#e9d2ab']);
+  const gg=document.getElementById('glow');
+  gg.children[0].setAttribute('stop-opacity','.30');
+  const fl=document.getElementById('floor');
+  [...fl.children].forEach((c,i)=>c.setAttribute('stop-color',['#e6d0ad','#d9bc90','#c5a071'][i]));
+  document.querySelectorAll('#bokeh circle').forEach(c=>{
+    c.setAttribute('fill','#d8a86a'); c.setAttribute('opacity', (parseFloat(c.getAttribute('opacity'))*1.5).toFixed(3)); });
+  document.getElementById('vig').style.background=
+    'radial-gradient(118% 76% at 50% 48%, rgba(0,0,0,0) 44%, rgba(120,70,30,.10) 76%, rgba(90,50,20,.20) 100%)';
+  document.getElementById('grain').style.opacity='.045';
+  document.querySelectorAll('#archwrap path').forEach(p=>{ if(p.getAttribute('stroke')==='#ffe6ae') p.setAttribute('stroke','#c98f2a'); });
+  document.getElementById('t-names').style.color='#6e2230';
+  document.getElementById('t-date').style.color='#b07a22';
+  document.getElementById('t-std').style.color='#8a5a3c';
+  const gl=document.querySelector('#root > ellipse');
+  gl.setAttribute('fill','#ffd9a0'); gl.setAttribute('opacity','.34');
+  document.querySelectorAll('#root > rect + ellipse ~ ellipse').forEach(e=>{
+    const o=parseFloat(e.getAttribute('opacity')||1); e.setAttribute('opacity',(o*0.5).toFixed(3)); });
+}
 
 /* ===================== film grain ===================== */
 const GT=14,GS=200,gurl=[];

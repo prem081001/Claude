@@ -1,31 +1,30 @@
 #!/usr/bin/env bash
-# 660 PNGs + music bed + 4 synthesised effects -> H.264 / AAC MP4
+# 450 PNGs + music + 3 synthesised effects -> H.264 / AAC MP4  (15s)
 set -euo pipefail
 cd "$(dirname "$0")"
 
-if [ -f audio/track.mp3 ]; then BED=audio/track.mp3; echo "using audio/track.mp3"; \
-else BED=audio/bed.wav; echo "using the synthesised bed"; fi
+# The generated track runs 23.7s with a quiet intro, a lift at 10s and a settle
+# at 21s. Starting 6s in lands the lift just before the celebration at 5s and
+# the settle on the final title, so the 15s cut gets the whole arc.
+if [ -f audio/track.mp3 ]; then BEDIN=( -ss 6 -i audio/track.mp3 ); echo "using audio/track.mp3 from 6s"; \
+else BEDIN=( -i audio/bed.wav ); echo "using the synthesised bed"; fi
 
-# Effects sit 14-18 dB under the music so they stay underneath it:
-#   buzz 3s · whoosh 4.7/9.7/14.7s (the three transitions) · shimmer 12s · bell 15s
-MIX="[1:a]aresample=48000,aformat=channel_layouts=stereo,atrim=0:22,asetpts=N/SR/TB,\
-afade=t=in:st=0:d=1.5,afade=t=out:st=20:d=2,volume=1.0[bed];\
-[3:a]asplit=3[w1][w2][w3];\
-[2:a]adelay=3000|3000,volume=0.13[buzz];\
+# whoosh on the two transitions · sparkle under the petals · bell as the date card opens
+MIX="[1:a]aresample=48000,aformat=channel_layouts=stereo,atrim=0:15,asetpts=N/SR/TB,\
+afade=t=in:st=0:d=1.2,afade=t=out:st=13.3:d=1.7,volume=1.0[bed];\
+[3:a]asplit=2[w1][w2];\
 [w1]adelay=4700|4700,volume=0.12[wh1];\
-[w2]adelay=9700|9700,volume=0.12[wh2];\
-[w3]adelay=14700|14700,volume=0.12[wh3];\
-[4:a]adelay=12000|12000,volume=0.18[shim];\
-[5:a]adelay=15000|15000,volume=0.20[bell];\
-[bed][buzz][wh1][wh2][wh3][shim][bell]amix=inputs=7:duration=first:normalize=0,\
-atrim=0:22,asetpts=N/SR/TB"
+[w2]adelay=8500|8500,volume=0.12[wh2];\
+[2:a]adelay=2000|2000,volume=0.18[shim];\
+[4:a]adelay=8800|8800,volume=0.20[bell];\
+[bed][wh1][wh2][shim][bell]amix=inputs=5:duration=first:normalize=0,\
+atrim=0:15,asetpts=N/SR/TB"
 
-IN=( -i "$BED" -i audio/sfx_buzz.wav -i audio/sfx_whoosh.wav
-     -i audio/sfx_shimmer.wav -i audio/sfx_bell.wav )
+IN=( "${BEDIN[@]}" -i audio/sfx_shimmer.wav -i audio/sfx_whoosh.wav -i audio/sfx_bell.wav )
 
 # --- pass 1: measure the finished mix so loudnorm can hit -14 LUFS exactly ---
 echo "measuring loudness…"
-MEAS=$(ffmpeg -hide_banner -nostats -f lavfi -t 22 -i anullsrc "${IN[@]}" \
+MEAS=$(ffmpeg -hide_banner -nostats -f lavfi -t 15 -i anullsrc "${IN[@]}" \
   -filter_complex "${MIX},loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json[a]" \
   -map "[a]" -f null - 2>&1 | sed -n '/^{/,/^}/p')
 get(){ echo "$MEAS" | grep "\"$1\"" | sed 's/.*: *"\([^"]*\)".*/\1/'; }

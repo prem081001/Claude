@@ -1,6 +1,6 @@
 # Prem & Vasudha — animated save-the-date
 
-9:16 WhatsApp status. **1080x1920 · 22.000s · 30fps · 660 frames · H.264 + AAC · 7.8 MB**
+9:16 WhatsApp status. **1080x1920 · 22.000s · 30fps · 660 frames · H.264 + AAC · 7.8 MB · -14.0 LUFS**
 
 ## Build
 
@@ -45,13 +45,21 @@ All titles sit inside the 12% safe margin.
 
 ## Audio
 
-No `audio/track.mp3` was supplied, so `gen_audio.py` synthesises everything with
-numpy: an F-major bed (Fmaj7 · Dm7 · B♭maj7 · Csus4) of detuned sine pad,
-plucked arpeggio and a 55 Hz pulse, plus phone buzz @3s, whoosh @4.7/9.7/14.7s,
-sparkle @12s and bell @15s. Effects sit 16–18 dB under the bed; the mix is
-normalised to -14.1 LUFS for a phone speaker.
+`audio/track.mp3` is a generated Indian wedding instrumental — sitar and bansuri
+over tabla and dholak, with shehnai and strings. It has a real arc: a tender
+intro, a festive lift at 10s that carries the proposal and the titles, and a
+natural settle at the end. `encode.sh` trims it to 22s, fades in 1.5s and out
+over the last 2s.
 
-Drop your own `audio/track.mp3` into `audio/` and `encode.sh` uses it instead,
-trimmed to 22s with the same fades, effects and normalisation.
+Over the top sit four effects synthesised by `gen_audio.py` with numpy alone:
+phone buzz @3s, whoosh @4.7/9.7/14.7s (the three transitions), sparkle @12s and
+bell @15s, all 14–18 dB under the music.
+
+Loudness is set by a **two-pass** `loudnorm`: pass one measures the finished mix,
+pass two normalises with those numbers. Single-pass lands about 2 dB hot — this
+hits **-14.0 LUFS integrated, -2.5 dBTP**, right for a phone speaker.
+
+Replace `audio/track.mp3` with any other track and re-run `./encode.sh`; delete it
+and the script falls back to the synthesised bed from `gen_audio.py`.
 
 `index_svg_backup.html` is the earlier all-SVG version, kept for reference.
